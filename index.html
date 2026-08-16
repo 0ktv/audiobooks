@@ -1,741 +1,324 @@
 <!doctype html>
 <html lang="ru" data-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f1720" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Слушаю 98" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <title>Слушаю 98 — Яндекс Диск</title>
-  <style>
-    :root{
-      --font: Tahoma, Verdana, Geneva, sans-serif;
-      --safe-top: calc(env(safe-area-inset-top) + 10px);
-      --safe-bottom: calc(env(safe-area-inset-bottom) + 14px);
-    }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#008080">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Слушаю 98">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>Слушаю 98</title>
+<style>
+:root{
+  --font:Tahoma,Verdana,Arial,sans-serif;
+  --safe-top:calc(env(safe-area-inset-top) + 8px);
+  --safe-bottom:calc(env(safe-area-inset-bottom) + 10px);
+}
+html[data-theme="light"]{
+  --desktop:#008080; --desktop2:#007272;
+  --win:#c0c0c0; --face:#d4d0c8; --panel:#ece9d8;
+  --text:#000; --muted:#444; --white:#fff; --shadow:#404040; --mid:#808080;
+  --title1:#000080; --title2:#1084d0; --selection:#000080; --selectionText:#fff;
+  --lcd:#07150c; --eqOff:#12301c; --eq1:#21e46f; --eq2:#baff62; --eq3:#ffe36d;
+}
+html[data-theme="dark"]{
+  --desktop:#10161f; --desktop2:#080c11;
+  --win:#3d4651; --face:#4e5965; --panel:#272e36;
+  --text:#f4f6f8; --muted:#c1c8d0; --white:#7a8591; --shadow:#05070a; --mid:#1b222a;
+  --title1:#0a2f64; --title2:#187ec9; --selection:#163b78; --selectionText:#fff;
+  --lcd:#020604; --eqOff:#0c2516; --eq1:#2ce078; --eq2:#9bfa60; --eq3:#fff078;
+}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;overflow-x:hidden;font-family:var(--font);color:var(--text);background:linear-gradient(180deg,var(--desktop),var(--desktop2));}
+body{padding:var(--safe-top) 8px var(--safe-bottom);touch-action:manipulation}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.11;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.7) 1px,transparent 1.3px);background-size:4px 4px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+.hidden{display:none!important}
+.app{width:100%;max-width:680px;margin:0 auto}
+.window{width:100%;background:var(--win);border-top:2px solid var(--white);border-left:2px solid var(--white);border-right:2px solid var(--shadow);border-bottom:2px solid var(--shadow);box-shadow:3px 3px 0 rgba(0,0,0,.22)}
+.titlebar{height:31px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 3px 0 7px;color:#fff;font-size:13px;font-weight:700;background:linear-gradient(90deg,var(--title1),var(--title2))}
+.title-left{display:flex;align-items:center;gap:6px;overflow:hidden}.title-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.win-icon{width:15px;height:15px;flex:0 0 auto;background:#fff;color:#000;border:1px solid #000;display:grid;place-items:center;font-size:9px}
+.title-actions{display:flex;gap:2px;flex:0 0 auto}
+.win-btn,.btn,.tool,.theme-btn{background:var(--face);border-top:2px solid var(--white);border-left:2px solid var(--white);border-right:2px solid var(--shadow);border-bottom:2px solid var(--shadow)}
+.win-btn{width:27px;height:22px;padding:0;display:grid;place-items:center;color:var(--text);font-weight:700}
+.win-btn:active,.btn:active,.tool:active,.theme-btn:active{border-top-color:var(--shadow);border-left-color:var(--shadow);border-right-color:var(--white);border-bottom-color:var(--white);padding-top:2px;padding-left:2px}
+.content{padding:8px;display:grid;gap:8px}
+.inset{background:var(--panel);border-top:2px solid var(--mid);border-left:2px solid var(--mid);border-right:2px solid var(--white);border-bottom:2px solid var(--white)}
 
-    html[data-theme="light"]{
-      --desktop-a:#0f8e8e;
-      --desktop-b:#006b6b;
-      --window:#c0c0c0;
-      --face:#d4d0c8;
-      --panel:#ece9d8;
-      --panel2:#f4f2eb;
-      --text:#000;
-      --muted:#3f3f3f;
-      --title-start:#000080;
-      --title-end:#1084d0;
-      --title-inactive-start:#707070;
-      --title-inactive-end:#9f9f9f;
-      --line-hi:#ffffff;
-      --line-mid:#dfdfdf;
-      --line-low:#808080;
-      --line-dark:#404040;
-      --accent:#000080;
-      --accent-soft:#dfe6ff;
-      --desktop-text:#fff;
-      --eq-bg:#050505;
-      --eq-grid:#0e3f26;
-      --eq-off:#0d311c;
-      --eq-on-1:#1be45b;
-      --eq-on-2:#b8ff53;
-      --eq-on-3:#ffe56c;
-      --shadow:rgba(0,0,0,.22);
-      --toast-bg:#ece9d8;
-    }
+/* HOME */
+.home-intro{padding:10px;display:grid;gap:8px}
+.home-title{font-size:21px;line-height:1.02;font-weight:700;letter-spacing:-.02em}
+.home-copy{font-size:12px;line-height:1.4;color:var(--muted)}
+.theme-switch{display:flex;gap:5px}.theme-btn{min-height:34px;padding:0 10px;font-size:12px}.theme-btn.active{outline:1px dotted currentColor;outline-offset:-6px}
+.source-box{padding:8px;display:grid;gap:7px}
+.label{font-size:11px;color:var(--muted)}
+.input{width:100%;height:45px;background:#fff;color:#000;border-top:2px solid var(--shadow);border-left:2px solid var(--shadow);border-right:2px solid #fff;border-bottom:2px solid #fff;padding:0 10px;font-size:16px;outline:none;border-radius:0}
+.source-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}.btn{height:42px;padding:0 8px;font-size:13px;font-weight:700}
+.status{font-size:11px;line-height:1.35;color:var(--muted);min-height:16px}.status.error{color:#a40000;font-weight:700}html[data-theme="dark"] .status.error{color:#ff8e8e}
+.library-title{font-size:12px;font-weight:700;padding:0 2px}
+.library{background:#fff;color:#000;border-top:2px solid var(--shadow);border-left:2px solid var(--shadow);border-right:2px solid #fff;border-bottom:2px solid #fff;max-height:220px;overflow:auto;padding:3px}
+.library-empty{padding:14px 10px;font-size:12px;color:#555}
+.library-item{width:100%;border:0;background:transparent;color:#000;text-align:left;padding:8px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:13px}.library-item+.library-item{border-top:1px dotted #aaa}.library-meta{font-size:11px;color:#555;margin-top:2px}
 
-    html[data-theme="dark"]{
-      --desktop-a:#18212d;
-      --desktop-b:#0c1117;
-      --window:#3a434d;
-      --face:#4d5864;
-      --panel:#242a31;
-      --panel2:#2b343d;
-      --text:#f2f5f8;
-      --muted:#c1c8d0;
-      --title-start:#0a2d5f;
-      --title-end:#1880d6;
-      --title-inactive-start:#50565e;
-      --title-inactive-end:#707883;
-      --line-hi:#778391;
-      --line-mid:#56606d;
-      --line-low:#161c23;
-      --line-dark:#05070a;
-      --accent:#81b6ff;
-      --accent-soft:#14284d;
-      --desktop-text:#eef4fa;
-      --eq-bg:#030607;
-      --eq-grid:#163621;
-      --eq-off:#10271a;
-      --eq-on-1:#33dd7b;
-      --eq-on-2:#8df560;
-      --eq-on-3:#fff274;
-      --shadow:rgba(0,0,0,.45);
-      --toast-bg:#4d5864;
-    }
+/* PLAYER */
+.book-head{display:grid;grid-template-columns:66px 1fr;gap:9px;align-items:center;padding:8px}
+.cover{width:66px;height:66px;background:linear-gradient(135deg,#fff9ca,#ece9d8);color:#000;border-top:2px solid #fff;border-left:2px solid #fff;border-right:2px solid #404040;border-bottom:2px solid #404040;display:grid;place-items:center;text-align:center;font-weight:700;font-size:11px;line-height:1.05;padding:5px;overflow:hidden}
+.book-title{font-size:17px;line-height:1.08;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.book-meta{font-size:11px;color:var(--muted);margin-top:5px}.resume{font-size:11px;color:var(--muted);margin-top:3px}
 
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{margin:0;min-height:100%;font-family:var(--font);background:linear-gradient(180deg,var(--desktop-a),var(--desktop-b));color:var(--text)}
-    body{padding:var(--safe-top) 10px var(--safe-bottom);background-attachment:fixed}
-    body::before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;
-      background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.55) 1px, transparent 1.5px);
-      background-size:4px 4px;
-      mix-blend-mode:soft-light;
-    }
-    button,input,select{font:inherit;color:inherit}
-    button{cursor:pointer}
-    .hidden{display:none!important}
-    .app{max-width:880px;margin:0 auto;display:grid;gap:10px}
-    .window{background:var(--window);border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark);box-shadow:4px 4px 0 var(--shadow)}
-    .titlebar{height:32px;background:linear-gradient(90deg,var(--title-start),var(--title-end));display:flex;align-items:center;justify-content:space-between;padding:0 4px 0 8px;color:#fff;font-size:14px;font-weight:700;letter-spacing:.01em}
-    .titlebar.inactive{background:linear-gradient(90deg,var(--title-inactive-start),var(--title-inactive-end))}
-    .title-left{display:flex;align-items:center;gap:7px;min-width:0}
-    .title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .win-icon{width:16px;height:16px;background:#fff;color:#000;border:1px solid #000;display:grid;place-items:center;font-size:10px;line-height:1}
-    .title-actions{display:flex;gap:2px}
-    .tb-btn,.btn,.tool-btn,.select,.theme-chip{background:var(--face);border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark)}
-    .tb-btn{width:28px;height:22px;padding:0;display:grid;place-items:center;font-weight:700}
-    .tb-btn:active,.btn:active,.tool-btn:active,.theme-chip:active{border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi)}
-    .body{padding:10px}
-    .stack{display:grid;gap:10px}
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    fieldset.group{margin:0;min-width:0;padding:10px 10px 12px;border-top:2px solid var(--line-low);border-left:2px solid var(--line-low);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);background:var(--panel)}
-    fieldset.group legend{padding:0 6px;font-size:12px;color:var(--muted)}
-    .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
-    .hero-title{font-size:26px;line-height:1;letter-spacing:-.03em;font-weight:700;margin:0 0 6px}
-    .hero-text{font-size:13px;line-height:1.45;color:var(--muted);max-width:520px}
-    .theme-box{display:grid;gap:8px;justify-items:end}
-    .theme-label{font-size:11px;color:var(--muted)}
-    .theme-row{display:flex;gap:6px}
-    .theme-chip{min-height:34px;padding:0 10px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
-    .theme-chip.active{outline:1px dotted var(--accent);outline-offset:-6px;background:var(--accent-soft)}
-    .theme-dot{width:10px;height:10px;border:1px solid var(--line-dark);background:#fff}
-    .theme-dot.dark{background:#0e1620}
-    .input-wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
-    .input{width:100%;min-height:46px;padding:10px 12px;background:#fff;color:#000;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);outline:none;border-radius:0;font-size:16px}
-    html[data-theme="dark"] .input{background:#e9edf2;color:#000}
-    .btn{min-height:42px;padding:0 14px;font-size:15px}
-    .btn.primary{font-weight:700}
-    .status{min-height:18px;font-size:12px;line-height:1.4;color:var(--muted);padding:2px 1px}
-    .status.error{color:#9d0d0d;font-weight:700}
-    html[data-theme="dark"] .status.error{color:#ff8686}
-    .info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-    .info-card{padding:8px;background:var(--panel2);border-top:1px solid var(--line-hi);border-left:1px solid var(--line-hi);border-right:1px solid var(--line-low);border-bottom:1px solid var(--line-low)}
-    .info-head{font-size:11px;color:var(--muted);margin-bottom:4px}
-    .info-text{font-size:12px;line-height:1.35}
-    .library-list,.playlist{background:#fff;color:#000;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);padding:4px;max-height:270px;overflow:auto}
-    html[data-theme="dark"] .library-list,html[data-theme="dark"] .playlist{background:#dfe5ec}
-    .library-empty,.playlist-empty{padding:12px 10px;color:#555;font-size:12px}
-    .library-item,.track{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;background:transparent;border:1px solid transparent;text-align:left}
-    .library-item+.library-item,.track+.track{border-top:1px dotted #a8a8a8}
-    .library-item.active,.track.active{background:#000080;color:#fff}
-    .book-meta,.track-meta{font-size:11px;color:#575757;margin-top:2px}
-    .library-item.active .book-meta,.track.active .track-meta{color:#d6d6ff}
-    .statusbar{display:flex;gap:4px;flex-wrap:wrap}
-    .status-seg{flex:1;min-width:140px;min-height:26px;display:flex;align-items:center;padding:0 6px;background:var(--face);border-top:1px solid var(--line-low);border-left:1px solid var(--line-low);border-right:1px solid var(--line-hi);border-bottom:1px solid var(--line-hi);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .player-grid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:10px}
-    .cover-panel{display:grid;gap:10px}
-    .cover-art{aspect-ratio:1/1;background:linear-gradient(180deg,#fff7c4,#fff);display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;line-height:1.15;font-size:20px;font-weight:700;word-break:break-word;border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark);position:relative;overflow:hidden}
-    .cover-art::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 0 50%, rgba(255,255,255,.18) 50% 51%, transparent 51% 100%);background-size:100% 4px;opacity:.45;mix-blend-mode:overlay}
-    .cover-caption{font-size:12px;color:var(--muted);line-height:1.45}
-    .subtle{font-size:12px;line-height:1.4;color:var(--muted)}
-    .book-title{margin:0 0 6px;font-size:22px;line-height:1.05;letter-spacing:-.03em}
-    .player-main{display:grid;gap:10px}
-    .chapter-name{font-size:18px;font-weight:700;line-height:1.18;min-height:42px}
-    .progress-wrap{display:grid;gap:6px}
-    .progress{appearance:none;-webkit-appearance:none;width:100%;height:22px;background:var(--face);padding:3px;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi)}
-    .progress::-webkit-slider-runnable-track{height:10px;background:linear-gradient(to right,var(--accent) 0 var(--p,0%), #bdbdbd var(--p,0%) 100%);border-top:1px solid var(--line-low);border-left:1px solid var(--line-low);border-right:1px solid var(--line-hi);border-bottom:1px solid var(--line-hi)}
-    .progress::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:24px;margin-top:-7px;background:var(--face);border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark)}
-    .time-line{display:flex;justify-content:space-between;font-size:12px}
-    .dock{display:grid;gap:8px}
-    .controls{display:flex;gap:6px;flex-wrap:wrap}
-    .tool-btn,.select{min-height:40px;padding:0 12px;font-size:14px}
-    .tool-btn.big{min-width:92px;font-weight:700}
-    .select{padding-right:24px;background-image:linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);background-position:calc(100% - 14px) 16px, calc(100% - 9px) 16px;background-size:5px 5px, 5px 5px;background-repeat:no-repeat;appearance:none;-webkit-appearance:none}
-    .eq-shell{background:var(--eq-bg);padding:8px;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);position:relative;overflow:hidden;min-height:146px}
-    .eq-shell::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg, rgba(255,255,255,.08) 0 1px, transparent 1px 4px);opacity:.15;pointer-events:none}
-    .eq-shell::after{content:"";position:absolute;left:0;right:0;top:-35%;height:45%;background:linear-gradient(180deg, rgba(255,255,255,.14), transparent);animation:scan 6s linear infinite;pointer-events:none;mix-blend-mode:screen}
-    @keyframes scan{to{transform:translateY(300%)}}
-    #viz{display:block;width:100%;height:128px}
-    .eq-labels{position:absolute;left:8px;right:8px;bottom:7px;display:flex;justify-content:space-between;font-size:10px;color:var(--eq-on-2);letter-spacing:.08em}
-    .led-strip{display:flex;gap:6px;align-items:center;font-size:10px;color:var(--desktop-text)}
-    .led{width:8px;height:8px;border-radius:50%;background:#5d5d5d;border:1px solid #000;box-shadow:0 0 0 1px rgba(255,255,255,.15) inset}
-    .led.on{background:#1aff72;box-shadow:0 0 9px rgba(26,255,114,.75)}
-    .mini-marquee{overflow:hidden;white-space:nowrap;position:relative;background:var(--panel2);padding:4px 6px;border-top:1px solid var(--line-hi);border-left:1px solid var(--line-hi);border-right:1px solid var(--line-low);border-bottom:1px solid var(--line-low);font-size:11px}
-    .mini-marquee span{display:inline-block;padding-left:100%;animation:marquee 12s linear infinite}
-    @keyframes marquee{to{transform:translateX(-100%)}}
-    .dialog-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.28);z-index:60}
-    .dialog-backdrop.show{display:flex}
-    .dialog{width:min(380px,100%)}
-    .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-    .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 12px);transform:translateX(-50%);z-index:70;min-width:220px;max-width:min(92vw,520px)}
-    .toast .body{padding:8px 12px;font-size:13px;font-weight:700;background:var(--toast-bg)}
+.now{padding:8px;display:grid;gap:7px}.now-line{display:grid;grid-template-columns:auto 1fr auto;gap:7px;align-items:center}.led{width:8px;height:8px;border-radius:50%;background:#6d6d6d;border:1px solid #000}.led.on{background:#1aff70;box-shadow:0 0 8px rgba(26,255,112,.75)}.chapter-name{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.state-text{font-size:10px;color:var(--muted)}
+.marquee{background:var(--face);border-top:1px solid var(--white);border-left:1px solid var(--white);border-right:1px solid var(--mid);border-bottom:1px solid var(--mid);height:24px;overflow:hidden;white-space:nowrap;font-size:10px;display:flex;align-items:center}.marquee span{display:inline-block;padding-left:100%;animation:marquee 11s linear infinite}@keyframes marquee{to{transform:translateX(-100%)}}
 
-    @media (max-width:760px){
-      body{padding-left:8px;padding-right:8px}
-      .hero{grid-template-columns:1fr}
-      .theme-box{justify-items:start}
-      .hero-title{font-size:22px}
-      .info-grid{grid-template-columns:1fr}
-      .player-grid{grid-template-columns:1fr}
-      .cover-panel{grid-template-columns:88px 1fr;align-items:start}
-      .cover-art{font-size:14px;padding:8px;aspect-ratio:1/1}
-      .book-title{font-size:18px}
-      .chapter-name{font-size:16px;min-height:0}
-      .dock.sticky-mobile{position:sticky;bottom:8px;z-index:4}
-      .controls.compact-mobile .tool-btn,.controls.compact-mobile .select{flex:1 1 calc(50% - 4px);min-width:0}
-      .controls.compact-mobile .tool-btn.big{flex:1 1 calc(33.333% - 4px)}
-      .status-seg{min-width:0;flex:1 1 calc(50% - 2px)}
-    }
-  </style>
+.eq{position:relative;height:104px;padding:6px;background:var(--lcd);border-top:2px solid var(--shadow);border-left:2px solid var(--shadow);border-right:2px solid var(--white);border-bottom:2px solid var(--white);overflow:hidden}.eq:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(255,255,255,.055) 0 1px,transparent 1px 4px);pointer-events:none}.eq canvas{width:100%;height:100%;display:block}.eq-caption{position:absolute;left:8px;right:8px;bottom:4px;display:flex;justify-content:space-between;color:var(--eq2);font-size:9px;letter-spacing:.08em;z-index:2}
+
+.controls{padding:8px;display:grid;gap:7px;position:sticky;bottom:calc(env(safe-area-inset-bottom) + 5px);z-index:10;box-shadow:0 -8px 18px rgba(0,0,0,.12)}
+.progress{appearance:none;-webkit-appearance:none;width:100%;height:20px;background:var(--face);padding:3px;border-top:2px solid var(--shadow);border-left:2px solid var(--shadow);border-right:2px solid var(--white);border-bottom:2px solid var(--white)}
+.progress::-webkit-slider-runnable-track{height:8px;background:linear-gradient(to right,var(--selection) 0 var(--p,0%),#a9a9a9 var(--p,0%) 100%);border:1px solid var(--mid)}
+.progress::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:22px;margin-top:-8px;background:var(--face);border-top:2px solid var(--white);border-left:2px solid var(--white);border-right:2px solid var(--shadow);border-bottom:2px solid var(--shadow)}
+.time-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.main-buttons{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:5px}.tool{height:46px;padding:0 7px;font-size:13px;font-weight:700}.tool.play{font-size:15px}
+.subtools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}.select{width:100%;height:40px;background:var(--face);color:var(--text);border-top:2px solid var(--white);border-left:2px solid var(--white);border-right:2px solid var(--shadow);border-bottom:2px solid var(--shadow);padding:0 8px;border-radius:0}
+.subtools .tool{height:40px;font-weight:400;font-size:12px}
+
+.playlist-wrap{padding:5px}.playlist-title{display:flex;justify-content:space-between;align-items:center;padding:2px 3px 6px;font-size:11px;font-weight:700}.playlist{background:#fff;color:#000;border-top:2px solid var(--shadow);border-left:2px solid var(--shadow);border-right:2px solid #fff;border-bottom:2px solid #fff;overflow:hidden}.track{width:100%;border:0;background:#fff;color:#000;text-align:left;padding:9px 8px;display:grid;grid-template-columns:26px 1fr auto;gap:7px;align-items:center;font-size:13px}.track+.track{border-top:1px dotted #aaa}.track.active{background:var(--selection);color:var(--selectionText)}.track-num{font-variant-numeric:tabular-nums;color:#666}.track.active .track-num{color:#d9e0ff}.track-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track-meta{font-size:10px;color:#666}.track.active .track-meta{color:#d9e0ff}
+.statusbar{display:grid;grid-template-columns:1fr auto;gap:4px}.status-seg{min-height:24px;background:var(--face);border-top:1px solid var(--mid);border-left:1px solid var(--mid);border-right:1px solid var(--white);border-bottom:1px solid var(--white);padding:0 6px;display:flex;align-items:center;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.dialog-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;align-items:flex-end;justify-content:center;padding:0 8px calc(env(safe-area-inset-bottom) + 8px);z-index:50}.dialog-backdrop.show{display:flex}.dialog{width:min(100%,480px);margin-bottom:4px}.dialog-body{padding:8px;display:grid;gap:6px}.sleep-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.sleep-grid .btn{height:42px}.custom-sleep{display:grid;grid-template-columns:1fr auto;gap:5px}.custom-sleep .input{height:42px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 14px);transform:translateX(-50%);z-index:70;max-width:calc(100vw - 24px);padding:8px 12px;background:var(--face);border-top:2px solid var(--white);border-left:2px solid var(--white);border-right:2px solid var(--shadow);border-bottom:2px solid var(--shadow);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:620px){.book-head{grid-template-columns:80px 1fr}.cover{width:80px;height:80px}.eq{height:128px}.track{font-size:14px}}
+</style>
 </head>
 <body>
 <div class="app">
   <section id="homeScreen" class="window">
     <div class="titlebar">
-      <div class="title-left">
-        <div class="win-icon">♪</div>
-        <div class="title-text">Слушаю 98 — Яндекс Диск</div>
-      </div>
-      <div class="title-actions">
-        <button class="tb-btn" type="button" aria-label="Свернуть">_</button>
-        <button class="tb-btn" type="button" aria-label="Закрыть">×</button>
-      </div>
+      <div class="title-left"><span class="win-icon">♪</span><span class="title-text">Слушаю 98</span></div>
+      <div class="title-actions"><button id="homeTheme" class="win-btn" type="button">◐</button></div>
     </div>
-    <div class="body stack">
-      <fieldset class="group">
-        <legend>Пуск</legend>
-        <div class="hero">
-          <div>
-            <h1 class="hero-title">Аудиокниги из Яндекс Диска</h1>
-            <div class="hero-text">Вставь публичную ссылку на папку или аудиофайл. Плеер сам соберёт главы, сохранит место остановки и откроет всё в мобильном Win98‑интерфейсе.</div>
-          </div>
-          <div class="theme-box">
-            <div class="theme-label">Тема оформления</div>
-            <div class="theme-row">
-              <button id="lightThemeBtn" class="theme-chip" type="button"><span class="theme-dot"></span>Светлая</button>
-              <button id="darkThemeBtn" class="theme-chip" type="button"><span class="theme-dot dark"></span>Тёмная</button>
-            </div>
-          </div>
+    <div class="content">
+      <div class="inset home-intro">
+        <div class="home-title">Аудиокниги из Яндекс Диска</div>
+        <div class="home-copy">Одна публичная папка = одна книга. Файлы внутри автоматически становятся главами.</div>
+        <div class="theme-switch">
+          <button id="lightBtn" class="theme-btn" type="button">Светлая</button>
+          <button id="darkBtn" class="theme-btn" type="button">Тёмная</button>
         </div>
-      </fieldset>
-
-      <fieldset class="group">
-        <legend>Источник</legend>
-        <div class="input-wrap">
-          <input id="urlInput" class="input" type="text" placeholder="https://disk.yandex.ru/d/..." autocapitalize="none" autocomplete="off" spellcheck="false" />
-        </div>
-        <div class="row" style="margin-top:8px">
+      </div>
+      <div class="inset source-box">
+        <div class="label">Публичная ссылка Яндекс Диска</div>
+        <input id="urlInput" class="input" type="url" placeholder="https://disk.yandex.ru/d/..." spellcheck="false" autocapitalize="none">
+        <div class="source-actions">
           <button id="pasteBtn" class="btn" type="button">Вставить</button>
-          <button id="loadBtn" class="btn primary" type="button">Открыть</button>
+          <button id="loadBtn" class="btn" type="button">Открыть</button>
           <button id="continueBtn" class="btn" type="button">Продолжить</button>
         </div>
-        <div id="status" class="status">Поддерживаются публичные ссылки Яндекс Диска. В папке можно хранить сразу все главы книги.</div>
-      </fieldset>
-
-      <fieldset class="group">
-        <legend>Что нового</legend>
-        <div class="info-grid">
-          <div class="info-card"><div class="info-head">Мобильность</div><div class="info-text">Крупные кнопки, компактная обложка, sticky‑блок управления и удобный список глав на iPhone.</div></div>
-          <div class="info-card"><div class="info-head">Темы</div><div class="info-text">Две системные темы: классическая светлая и тёмная Win98‑версия. Выбор сохраняется.</div></div>
-          <div class="info-card"><div class="info-head">Визуал</div><div class="info-text">Новый сегментный эквалайзер, scanline‑эффект, LED‑индикаторы, бегущая строка и более живой статус‑бар.</div></div>
-        </div>
-      </fieldset>
-
-      <fieldset class="group">
-        <legend>Библиотека</legend>
-        <div id="library" class="library-list"><div class="library-empty">Здесь появятся книги, которые ты уже открывал.</div></div>
-      </fieldset>
-
-      <div class="statusbar">
-        <div class="status-seg" id="sourceStatus">Источник: Яндекс Диск</div>
-        <div class="status-seg" id="libraryCount">Книг: 0</div>
-        <div class="status-seg" id="clockLabel">--:--</div>
+        <div id="status" class="status">Поддерживаются папки и отдельные аудиофайлы.</div>
       </div>
+      <div class="library-title">Библиотека</div>
+      <div id="library" class="library"><div class="library-empty">Здесь появятся открытые книги.</div></div>
+      <div class="statusbar"><div id="homeStatus" class="status-seg">Яндекс Диск</div><div id="clock" class="status-seg">--:--</div></div>
     </div>
   </section>
 
   <section id="playerScreen" class="window hidden">
     <div class="titlebar">
-      <div class="title-left">
-        <div class="win-icon">►</div>
-        <div id="playerWindowTitle" class="title-text">Слушаю 98 — Плеер</div>
-      </div>
-      <div class="title-actions">
-        <button id="themeTogglePlayer" class="tb-btn" type="button" aria-label="Тема">◐</button>
-        <button id="homeBtn" class="tb-btn" type="button" aria-label="Домой">⌂</button>
-      </div>
+      <div class="title-left"><span class="win-icon">►</span><span id="windowTitle" class="title-text">Слушаю 98 — Плеер</span></div>
+      <div class="title-actions"><button id="playerTheme" class="win-btn" type="button">◐</button><button id="homeBtn" class="win-btn" type="button">⌂</button></div>
     </div>
-    <div class="body stack">
-      <div class="player-grid">
-        <fieldset class="group cover-panel">
-          <legend>Книга</legend>
-          <div id="coverArt" class="cover-art">Аудио</div>
-          <div>
-            <h1 id="bookTitle" class="book-title">Аудиокнига</h1>
-            <div id="bookMeta" class="subtle">0 глав</div>
-            <div id="resumeMeta" class="subtle" style="margin-top:8px">Позиция сохранится автоматически.</div>
-            <div class="mini-marquee" style="margin-top:10px"><span id="marqueeText">Готов к воспроизведению</span></div>
-          </div>
-        </fieldset>
-
-        <div class="player-main">
-          <fieldset class="group">
-            <legend>Сейчас играет</legend>
-            <div class="chapter-name" id="chapterNow">Глава 1</div>
-            <div class="row" style="justify-content:space-between;margin-top:6px">
-              <div class="led-strip"><span class="led" id="playLed"></span><span id="ledText">ОЖИДАНИЕ</span></div>
-              <div class="subtle" id="chapterCount">Глав: 0</div>
-            </div>
-          </fieldset>
-
-          <fieldset class="group dock sticky-mobile">
-            <legend>Управление</legend>
-            <div class="progress-wrap">
-              <input id="progress" class="progress" type="range" min="0" max="1000" value="0" />
-              <div class="time-line"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
-            </div>
-            <div class="controls compact-mobile">
-              <button id="back15" class="tool-btn big" type="button">« 15 сек</button>
-              <button id="playBtn" class="tool-btn big" type="button">Play</button>
-              <button id="forward15" class="tool-btn big" type="button">15 сек »</button>
-            </div>
-            <div class="controls compact-mobile">
-              <select id="speedSelect" class="select" aria-label="Скорость">
-                <option value="0.8">0.8×</option>
-                <option value="1" selected>1×</option>
-                <option value="1.1">1.1×</option>
-                <option value="1.25">1.25×</option>
-                <option value="1.5">1.5×</option>
-                <option value="1.75">1.75×</option>
-                <option value="2">2×</option>
-              </select>
-              <button id="sleepBtn" class="tool-btn" type="button">Сон…</button>
-              <button id="sourceBtn" class="tool-btn" type="button">Источник</button>
-              <button id="themeBtnInline" class="tool-btn" type="button">Тема</button>
-            </div>
-          </fieldset>
-
-          <fieldset class="group">
-            <legend>Equalizer 98</legend>
-            <div class="eq-shell">
-              <canvas id="viz" aria-hidden="true"></canvas>
-              <div class="eq-labels"><span>EQ 98</span><span id="eqThemeLabel">LIGHT</span></div>
-            </div>
-          </fieldset>
-
-          <fieldset class="group">
-            <legend>Главы</legend>
-            <div id="playlist" class="playlist"><div class="playlist-empty">Нет глав.</div></div>
-          </fieldset>
+    <div class="content">
+      <div class="inset book-head">
+        <div id="cover" class="cover">AUDIO<br>BOOK</div>
+        <div>
+          <div id="bookTitle" class="book-title">Аудиокнига</div>
+          <div id="bookMeta" class="book-meta">0 глав · Яндекс Диск</div>
+          <div id="resume" class="resume">Позиция сохраняется автоматически</div>
         </div>
       </div>
 
-      <div class="statusbar">
-        <div class="status-seg" id="playerStatus">Готово</div>
-        <div class="status-seg" id="sleepInfo">Сон: выкл.</div>
-        <div class="status-seg" id="sourceInfo">Источник: —</div>
+      <div class="inset now">
+        <div class="now-line"><span id="playLed" class="led"></span><div id="chapterNow" class="chapter-name">Глава 1</div><div id="stateText" class="state-text">ПАУЗА</div></div>
+        <div class="marquee"><span id="marquee">Готов к воспроизведению</span></div>
       </div>
+
+      <div class="eq"><canvas id="viz"></canvas><div class="eq-caption"><span>SPECTRUM ANALYZER</span><span id="eqTheme">LIGHT</span></div></div>
+
+      <div class="inset controls">
+        <input id="progress" class="progress" type="range" min="0" max="1000" value="0">
+        <div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+        <div class="main-buttons">
+          <button id="back15" class="tool" type="button">« 15</button>
+          <button id="playBtn" class="tool play" type="button">Play</button>
+          <button id="forward15" class="tool" type="button">15 »</button>
+        </div>
+        <div class="subtools">
+          <select id="speed" class="select" aria-label="Скорость"><option value="0.8">0.8×</option><option value="1" selected>1×</option><option value="1.1">1.1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="1.75">1.75×</option><option value="2">2×</option></select>
+          <button id="sleepBtn" class="tool" type="button">Сон</button>
+          <button id="sourceBtn" class="tool" type="button">Источник</button>
+        </div>
+      </div>
+
+      <div class="inset playlist-wrap">
+        <div class="playlist-title"><span>Главы</span><span id="chapterCount">0</span></div>
+        <div id="playlist" class="playlist"><div class="library-empty">Нет глав.</div></div>
+      </div>
+      <div class="statusbar"><div id="playerStatus" class="status-seg">Готово</div><div id="sleepStatus" class="status-seg">Сон: выкл.</div></div>
     </div>
   </section>
 </div>
 
 <div id="sleepDialog" class="dialog-backdrop">
   <div class="dialog window">
-    <div class="titlebar inactive">
-      <div class="title-left"><div class="win-icon">☾</div><div class="title-text">Таймер сна</div></div>
-      <div class="title-actions"><button id="closeSleepDialog" class="tb-btn" type="button">×</button></div>
-    </div>
-    <div class="body stack">
-      <fieldset class="group">
-        <legend>Быстрый выбор</legend>
-        <div class="preset-grid">
-          <button class="btn sleep-preset" type="button" data-min="15">15 мин</button>
-          <button class="btn sleep-preset" type="button" data-min="30">30 мин</button>
-          <button class="btn sleep-preset" type="button" data-min="45">45 мин</button>
-          <button class="btn sleep-preset" type="button" data-min="60">60 мин</button>
-          <button class="btn sleep-preset" type="button" data-min="90">90 мин</button>
-          <button id="sleepOff" class="btn" type="button">Выключить</button>
-        </div>
-      </fieldset>
-      <fieldset class="group">
-        <legend>Своё время</legend>
-        <div class="row">
-          <input id="customSleep" class="input" type="number" min="1" max="600" placeholder="Минуты" style="max-width:160px" />
-          <button id="customSleepBtn" class="btn primary" type="button">Поставить</button>
-        </div>
-        <div class="status">Если iPhone заморозит страницу, таймер всё равно проверится при следующем событии.</div>
-      </fieldset>
+    <div class="titlebar"><div class="title-left"><span class="win-icon">☾</span><span class="title-text">Таймер сна</span></div><div class="title-actions"><button id="closeSleep" class="win-btn" type="button">×</button></div></div>
+    <div class="dialog-body">
+      <div class="sleep-grid">
+        <button class="btn sleepPreset" data-min="15">15 мин</button><button class="btn sleepPreset" data-min="30">30 мин</button><button class="btn sleepPreset" data-min="45">45 мин</button>
+        <button class="btn sleepPreset" data-min="60">60 мин</button><button class="btn sleepPreset" data-min="90">90 мин</button><button id="sleepOff" class="btn">Выкл.</button>
+      </div>
+      <div class="custom-sleep"><input id="customSleep" class="input" type="number" min="1" max="600" placeholder="Минуты"><button id="customSleepBtn" class="btn">Поставить</button></div>
     </div>
   </div>
 </div>
-
-<div id="toast" class="toast window hidden"><div class="body" id="toastText"></div></div>
+<div id="toast" class="toast hidden"></div>
 <audio id="audio" preload="metadata" playsinline></audio>
 
 <script>
 (()=>{
 'use strict';
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const audio = $('#audio');
-const STORE = 'slushayu_ydisk_win98_v2';
-const SW_VERSION = 'v7';
-const EXAMPLE = 'https://disk.yandex.ru/d/F-KWXW-fwmrWcg';
-const FETCHERS = [
-  {name:'напрямую', make:u=>u},
-  {name:'AllOrigins', make:u=>'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)},
-  {name:'CorsProxy', make:u=>'https://corsproxy.io/?url=' + encodeURIComponent(u)}
-];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const audio=$('#audio');
+const STORE='slushayu98_mobile_v3';
+const EXAMPLE='https://disk.yandex.ru/d/F-KWXW-fwmrWcg';
+const SW_VERSION='v8';
+let state=loadState(), book=null, chapterIndex=0, loading=false, retrying=false, isSeeking=false, saveTick=0;
+let sleepDeadline=Number(localStorage.getItem('slushayu_sleep_deadline')||0), sleepTimer=null;
 
-const state = loadState();
-let book = null;
-let chapterIndex = 0;
-let isSeeking = false;
-let saveTick = 0;
-let loadingChapter = false;
-let retryingFreshLink = false;
-let sleepDeadline = Number(localStorage.getItem('slushayu_sleep_deadline') || 0);
-let sleepTimer = null;
+function loadState(){try{const v=JSON.parse(localStorage.getItem(STORE));if(v&&v.books)return v}catch{}return{books:{},lastUrl:'',theme:''}}
+function saveState(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch{}}
+function cleanKey(s){return String(s||'').trim().replace(/#.*$/,'').replace(/\/$/,'')}
+function fmt(sec){sec=Number.isFinite(sec)?Math.max(0,Math.floor(sec)):0;const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`}
+function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;if(n>10&&n<20)return c;if(n1===1)return a;if(n1>1&&n1<5)return b;return c}
+function humanSize(n){n=Number(n||0);if(!n)return'';return n<1048576?`${Math.max(1,Math.round(n/1024))} КБ`:`${(n/1048576).toFixed(1)} МБ`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function status(msg,error=false){$('#status').textContent=msg;$('#status').classList.toggle('error',!!error)}
+function pstatus(msg){$('#playerStatus').textContent=msg;$('#marquee').textContent=msg}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.add('hidden'),1600)}
+function setTheme(theme){theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=theme;state.theme=theme;saveState();$('#lightBtn').classList.toggle('active',theme==='light');$('#darkBtn').classList.toggle('active',theme==='dark');$('#eqTheme').textContent=theme.toUpperCase()}
+function toggleTheme(){setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark')}
+function isYandex(u){try{const h=new URL(u).hostname;return /(^|\.)disk\.yandex\.(ru|com)$/i.test(h)||/^yadi\.sk$/i.test(h)}catch{return false}}
+function normalize(raw){let u=String(raw||'').trim();if(!u)throw Error('Вставь ссылку на Яндекс Диск.');if(!/^https?:\/\//i.test(u))u='https://'+u;if(!isYandex(u))throw Error('Нужна публичная ссылка Яндекс Диска.');const x=new URL(u);x.hash='';return cleanKey(x.href)}
+function audioLike(name='',mime=''){return /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|m4b)$/i.test(name)||/^audio\//i.test(mime)}
+function stem(name=''){return String(name).replace(/\.[^.]+$/,'')}
+function chapterLabel(name='',i=0){const s=stem(name).replace(/[_-]+/g,' ').trim();return /^\d+$/.test(s)?`Глава ${s}`:(s||`Глава ${i+1}`)}
+function natural(a,b){return String(a||'').localeCompare(String(b||''),'ru',{numeric:true,sensitivity:'base'})}
+function joinRel(parent,name){return [parent,name].filter(Boolean).join('/').replace(/^\/+|\/+$/g,'')}
 
-function loadState(){
-  try{
-    const raw = JSON.parse(localStorage.getItem(STORE));
-    if(raw && raw.books) return raw;
-  }catch{}
-  return { books:{}, lastUrl:'', theme:'light' };
+async function fetchJson(url){
+ const attempts=[url,'https://api.allorigins.win/raw?url='+encodeURIComponent(url),'https://corsproxy.io/?url='+encodeURIComponent(url)],errors=[];
+ for(const u of attempts){try{const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),18000);const r=await fetch(u,{cache:'no-store',signal:ctl.signal,headers:{Accept:'application/json,*/*'}});clearTimeout(timer);const txt=await r.text();if(!r.ok)throw Error('HTTP '+r.status);return JSON.parse(txt)}catch(e){errors.push(e.message)}}
+ throw Error('Яндекс API не ответил: '+errors.join(' · '));
 }
-function saveState(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch{} }
-function cleanKey(url){ return String(url || '').trim().replace(/#.*$/,'').replace(/\/$/,''); }
-function fmt(sec){ sec = Number.isFinite(sec) ? Math.max(0, Math.floor(sec)) : 0; const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60; return h ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`; }
-function plural(n,a,b,c){ n=Math.abs(n)%100; const n1=n%10; if(n>10&&n<20) return c; if(n1===1) return a; if(n1>1&&n1<5) return b; return c; }
-function naturalCompare(a,b){ return String(a||'').localeCompare(String(b||''),'ru',{numeric:true,sensitivity:'base'}); }
-function isYandexLink(url){ try{ const u = new URL(url); return /(^|\.)disk\.yandex\.(ru|com)$/i.test(u.hostname) || /^yadi\.sk$/i.test(u.hostname); }catch{ return false; } }
-function normalizeInput(raw){
-  let url = String(raw || '').trim();
-  if(!url) throw new Error('Вставь ссылку на Яндекс Диск.');
-  if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
-  if(!isYandexLink(url)) throw new Error('Сейчас поддерживаются только публичные ссылки Яндекс Диска.');
-  const u = new URL(url); u.hash = ''; return cleanKey(u.href);
-}
-function status(msg, error=false){ const el = $('#status'); el.textContent = msg; el.classList.toggle('error', !!error); }
-function playerStatus(msg){ $('#playerStatus').textContent = msg; $('#marqueeText').textContent = msg; }
-function toast(msg){ $('#toastText').textContent = msg; const box = $('#toast'); box.classList.remove('hidden'); clearTimeout(box._t); box._t = setTimeout(()=>box.classList.add('hidden'), 1700); }
-function setTheme(theme){
-  const next = theme === 'dark' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', next);
-  state.theme = next; saveState();
-  $('#lightThemeBtn').classList.toggle('active', next === 'light');
-  $('#darkThemeBtn').classList.toggle('active', next === 'dark');
-  $('#eqThemeLabel').textContent = next.toUpperCase();
-}
-function toggleTheme(){ setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
-function makeCoverText(title){ return String(title || 'Аудио').replace(/[_-]+/g,' ').trim().split(/\s+/).slice(0,4).join(' '); }
-function audioLike(name='', mime=''){ return /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|m4b)$/i.test(name) || /^audio\//i.test(mime); }
-function extFromName(name=''){ const m = String(name).match(/\.([A-Za-z0-9]+)$/); return m ? m[1].toUpperCase() : 'AUDIO'; }
-function humanSize(bytes){ const n=Number(bytes||0); if(!n) return ''; if(n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} КБ`; return `${(n / (1024*1024)).toFixed(1)} МБ`; }
-function escapeHtml(text){ return String(text).replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s])); }
+function api(path,params){const u=new URL('https://cloud-api.yandex.net/v1/disk/'+path);Object.entries(params).forEach(([k,v])=>{if(v!==''&&v!=null)u.searchParams.set(k,v)});return u.href}
+async function getResource(publicKey,relative='',offset=0){return fetchJson(api('public/resources',{public_key:publicKey,path:relative||undefined,limit:200,offset}))}
+async function getDownload(publicKey,relative=''){const j=await fetchJson(api('public/resources/download',{public_key:publicKey,path:relative||undefined}));if(j&&j.href)return j.href;throw Error('Нет ссылки на скачивание')}
 
-async function fetchText(url){
-  const errors = [];
-  for(const fetcher of FETCHERS){
-    try{
-      const ctl = new AbortController();
-      const timer = setTimeout(()=>ctl.abort(), 18000);
-      const res = await fetch(fetcher.make(url), { cache:'no-store', signal:ctl.signal, headers:{ Accept:'application/json,text/plain,*/*' } });
-      clearTimeout(timer);
-      const text = await res.text();
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-      if(!text) throw new Error('пустой ответ');
-      return text;
-    }catch(err){ errors.push(fetcher.name + ': ' + (err && err.message || err)); }
-  }
-  throw new Error(errors.join(' · '));
+async function scan(publicKey,relative='',depth=0,out=[]){
+ if(depth>8)return{title:'Папка',items:out};
+ let offset=0,rootTitle='';
+ while(true){
+   const data=await getResource(publicKey,relative,offset);
+   if(!rootTitle)rootTitle=data.name||'Аудиокнига';
+   if(data.type==='file'){
+     if(audioLike(data.name,data.mime_type))out.push({name:data.name,path:relative||'',size:data.size||0,direct:data.file||'',mime:data.mime_type||''});
+     return{title:rootTitle,items:out};
+   }
+   const items=data?._embedded?.items||[];
+   for(const item of items){
+     // IMPORTANT: public/resources/download expects a path RELATIVE to the shared resource.
+     // Build it ourselves from folder/file names instead of reusing item.path returned by the API.
+     const rel=joinRel(relative,item.name||'');
+     if(item.type==='dir')await scan(publicKey,rel,depth+1,out);
+     else if(audioLike(item.name,item.mime_type))out.push({name:item.name,path:rel,size:item.size||0,direct:item.file||'',mime:item.mime_type||''});
+   }
+   offset+=items.length;
+   const total=Number(data?._embedded?.total||items.length);
+   if(!items.length||offset>=total)return{title:rootTitle,items:out};
+ }
 }
-async function fetchJson(url){ const text = await fetchText(url); try{ return JSON.parse(text); }catch{ throw new Error('JSON не разобрался'); } }
-function apiUrl(path, params){ const u = new URL('https://cloud-api.yandex.net/v1/disk/' + path); Object.entries(params).forEach(([k,v])=>{ if(v!==undefined && v!==null && v!=='') u.searchParams.set(k, v); }); return u.href; }
-async function getResource(publicKey, pathValue='', offset=0, limit=200){ return fetchJson(apiUrl('public/resources', { public_key: publicKey, path: pathValue || undefined, offset, limit })); }
-async function getDownloadLink(publicKey, pathValue=''){ const json = await fetchJson(apiUrl('public/resources/download', { public_key: publicKey, path: pathValue || undefined })); if(json && json.href) return json.href; throw new Error('Yandex не вернул ссылку на скачивание'); }
-async function collectAudio(publicKey, pathValue='', depth=0, collector=[]){
-  if(depth > 6) return collector;
-  let offset = 0;
-  let first = true;
-  while(true){
-    const data = await getResource(publicKey, pathValue, offset, 200);
-    if(first){
-      if((data.type === 'file' || audioLike(data.name, data.mime_type)) && audioLike(data.name, data.mime_type)){
-        collector.push({ name:data.name || `Глава ${collector.length+1}`, path:data.path || pathValue || '', mime:data.mime_type || '', size:data.size || 0, direct:data.file || '', source:'yandex' });
-        return { title:data.name || 'Аудиофайл', items:collector, type:'file' };
-      }
-    }
-    const items = data && data._embedded && Array.isArray(data._embedded.items) ? data._embedded.items : [];
-    for(const item of items){
-      if(item.type === 'dir') await collectAudio(publicKey, item.path || '', depth + 1, collector);
-      else if(audioLike(item.name, item.mime_type)) collector.push({ name:item.name || `Глава ${collector.length+1}`, path:item.path || '', mime:item.mime_type || '', size:item.size || 0, direct:item.file || '', source:'yandex' });
-    }
-    const total = data && data._embedded ? Number(data._embedded.total || items.length) : items.length;
-    offset += items.length;
-    first = false;
-    if(!items.length || offset >= total) return { title:data.name || 'Папка', items:collector, type:data.type || 'dir' };
-  }
-}
-function normalizeTracks(items){
-  const clean = items.filter(Boolean).map((item, idx)=>({ id:idx+1, name:String(item.name || '').trim() || `Глава ${idx+1}`, path:item.path || '', mime:item.mime || '', size:item.size || 0, direct:item.direct || '', href:'', hrefTs:0 }));
-  clean.sort((a,b)=>naturalCompare(a.name,b.name));
-  return clean.map((item, idx)=>({ ...item, order:idx+1 }));
-}
-function buildBook(publicKey, payload){
-  const chapters = normalizeTracks(payload.items || []);
-  if(!chapters.length) throw new Error('В этой папке не найдено ни одного аудиофайла.');
-  return { source:'yandex', url:publicKey, title:payload.title || 'Аудиокнига', coverText:makeCoverText(payload.title || 'Аудиокнига'), chapters };
-}
+function buildBook(publicKey,payload){const chapters=(payload.items||[]).sort((a,b)=>natural(a.path,b.path)).map((x,i)=>({...x,label:chapterLabel(x.name,i),href:'',hrefTs:0}));if(!chapters.length)throw Error('В папке нет аудиофайлов.');return{url:publicKey,title:payload.title||'Аудиокнига',chapters}}
 
-async function openUrl(raw, autoplay=false){
-  try{
-    const publicKey = normalizeInput(raw);
-    $('#urlInput').value = publicKey;
-    status('Читаю Яндекс Диск…');
-    const payload = await collectAudio(publicKey, '', 0, []);
-    book = buildBook(publicKey, payload);
-    state.lastUrl = publicKey;
-    saveState();
-    showPlayer();
-    renderBook();
-    restoreSpeed();
-    const rec = state.books[cleanKey(publicKey)] || {};
-    const startChapter = Math.min(book.chapters.length - 1, Math.max(0, Number(rec.chapter || 0)));
-    const startTime = Number(rec.time || 0);
-    await loadChapter(startChapter, startTime, autoplay);
-    renderLibrary();
-    status('Книга открыта.');
-    $('#sourceInfo').textContent = 'Источник: Яндекс Диск';
-  }catch(err){
-    status(err && err.message ? err.message : 'Не удалось открыть ссылку.', true);
-    toast('Ошибка загрузки');
-  }
+async function openUrl(raw,autoplay=false){
+ try{const key=normalize(raw);$('#urlInput').value=key;status('Читаю папку…');const payload=await scan(key);book=buildBook(key,payload);state.lastUrl=key;saveState();showPlayer();renderBook();restoreSpeed();const rec=state.books[key]||{};const ci=Math.min(book.chapters.length-1,Math.max(0,Number(rec.chapter||0)));await loadChapter(ci,Number(rec.time||0),autoplay);status('Книга открыта.');renderLibrary()}catch(e){status(e.message||'Не удалось открыть книгу.',true);toast('Ошибка')}
 }
-function showPlayer(){ $('#homeScreen').classList.add('hidden'); $('#playerScreen').classList.remove('hidden'); }
-function showHome(){ saveProgress(true); $('#playerScreen').classList.add('hidden'); $('#homeScreen').classList.remove('hidden'); }
+function showPlayer(){$('#homeScreen').classList.add('hidden');$('#playerScreen').classList.remove('hidden');requestAnimationFrame(resizeViz)}
+function showHome(){saveProgress(true);$('#playerScreen').classList.add('hidden');$('#homeScreen').classList.remove('hidden');renderLibrary()}
+function coverText(title){return String(title||'AUDIO BOOK').replace(/[\[\]()]/g,' ').split(/\s+/).filter(Boolean).slice(0,5).join('\n')}
+function renderBook(){if(!book)return;$('#windowTitle').textContent='Слушаю 98 — '+book.title;$('#bookTitle').textContent=book.title;$('#bookMeta').textContent=`${book.chapters.length} ${plural(book.chapters.length,'глава','главы','глав')} · Яндекс Диск`;$('#cover').textContent=coverText(book.title);$('#chapterCount').textContent=book.chapters.length;renderPlaylist();updateResume()}
+function renderPlaylist(){const box=$('#playlist');box.innerHTML='';book.chapters.forEach((ch,i)=>{const b=document.createElement('button');b.className='track'+(i===chapterIndex?' active':'');b.innerHTML=`<span class="track-num">${String(i+1).padStart(2,'0')}</span><div><div class="track-name">${esc(ch.label)}</div><div class="track-meta">${esc(ch.name)}${ch.size?' · '+humanSize(ch.size):''}</div></div><span>${i===chapterIndex?'►':''}</span>`;b.onclick=()=>loadChapter(i,0,true);box.appendChild(b)})}
+function renderLibrary(){const box=$('#library');const entries=Object.entries(state.books||{}).sort((a,b)=>(b[1].updated||0)-(a[1].updated||0));box.innerHTML='';if(!entries.length){box.innerHTML='<div class="library-empty">Здесь появятся открытые книги.</div>';return}entries.forEach(([url,rec])=>{const b=document.createElement('button');b.className='library-item';b.innerHTML=`<div><div>${esc(rec.title||'Аудиокнига')}</div><div class="library-meta">Глава ${Number(rec.chapter||0)+1} · ${fmt(rec.time||0)}</div></div><span>Открыть</span>`;b.onclick=()=>openUrl(url,false);box.appendChild(b)})}
 
-function renderBook(){
-  if(!book) return;
-  $('#playerWindowTitle').textContent = 'Слушаю 98 — ' + book.title;
-  $('#bookTitle').textContent = book.title;
-  $('#bookMeta').textContent = `${book.chapters.length} ${plural(book.chapters.length,'глава','главы','глав')} · Яндекс Диск`;
-  $('#coverArt').textContent = book.coverText;
-  $('#chapterCount').textContent = `Глав: ${book.chapters.length}`;
-  renderPlaylist();
-  updateResumeMeta();
+async function resolveChapter(ch){
+ if(ch.href&&Date.now()-ch.hrefTs<40*60*1000)return ch.href;
+ // Prefer a direct link already returned in metadata when present.
+ if(ch.direct){ch.href=ch.direct;ch.hrefTs=Date.now();return ch.href}
+ const href=await getDownload(book.url,ch.path);ch.href=href;ch.hrefTs=Date.now();return href;
 }
-function renderPlaylist(){
-  const box = $('#playlist'); box.innerHTML = '';
-  if(!book || !book.chapters.length){ box.innerHTML = '<div class="playlist-empty">Нет глав.</div>'; return; }
-  book.chapters.forEach((ch, idx)=>{
-    const row = document.createElement('button');
-    row.className = 'track' + (idx === chapterIndex ? ' active' : '');
-    row.type = 'button';
-    row.innerHTML = `<div><div>${String(idx+1).padStart(2,'0')}. ${escapeHtml(ch.name)}</div><div class="track-meta">${extFromName(ch.name)}${ch.size ? ' · ' + humanSize(ch.size) : ''}</div></div><div>${idx === chapterIndex ? '►' : ''}</div>`;
-    row.addEventListener('click', ()=>loadChapter(idx, 0, true));
-    box.appendChild(row);
-  });
-}
-function renderLibrary(){
-  const entries = Object.entries(state.books || {}).sort((a,b)=>(b[1].updated||0)-(a[1].updated||0));
-  $('#libraryCount').textContent = 'Книг: ' + entries.length;
-  const box = $('#library'); box.innerHTML = '';
-  if(!entries.length){ box.innerHTML = '<div class="library-empty">Здесь появятся книги, которые ты уже открывал.</div>'; return; }
-  entries.forEach(([url, rec])=>{
-    const item = document.createElement('button');
-    item.className = 'library-item'; item.type = 'button';
-    item.innerHTML = `<div><div>${escapeHtml(rec.title || 'Аудиокнига')}</div><div class="book-meta">Глава ${(Number(rec.chapter || 0) + 1)} · ${fmt(rec.time || 0)} · ${rec.chapterCount || 0} ${plural(rec.chapterCount || 0,'глава','главы','глав')}</div></div><div>Открыть</div>`;
-    item.addEventListener('click', ()=>{ $('#urlInput').value = url; openUrl(url, false); });
-    box.appendChild(item);
-  });
-}
+function setAudioSource(src,time=0,autoplay=false){return new Promise((resolve,reject)=>{
+ let done=false;const finish=(ok,err)=>{if(done)return;done=true;clearTimeout(timer);audio.removeEventListener('loadedmetadata',onMeta);audio.removeEventListener('canplay',onReady);audio.removeEventListener('error',onErr);ok?resolve(true):reject(err||Error('Аудио не открылось'))};
+ const onMeta=()=>{if(time>0&&Number.isFinite(audio.duration)){try{audio.currentTime=Math.min(time,Math.max(0,audio.duration-.25))}catch{}}updateProgress();};
+ const onReady=async()=>{if(autoplay){try{await audio.play()}catch{toast('Нажми Play')}}finish(true)};
+ const onErr=()=>finish(false,Error('Не удалось загрузить MP3'));
+ const timer=setTimeout(()=>{ // iOS may only preload metadata; do not declare failure if metadata exists.
+   if(audio.readyState>=1)finish(true);else finish(false,Error('Дорожка не отвечает'));
+ },15000);
+ audio.addEventListener('loadedmetadata',onMeta);audio.addEventListener('canplay',onReady);audio.addEventListener('error',onErr);audio.src=src;audio.load();
+ })}
+async function loadChapter(i,time=0,autoplay=false){if(!book||!book.chapters[i]||loading)return;loading=true;retrying=false;chapterIndex=i;renderPlaylist();const ch=book.chapters[i];$('#chapterNow').textContent=ch.label;pstatus('Подключаю '+ch.name+'…');try{
+   let src=await resolveChapter(ch);
+   try{
+     await setAudioSource(src,time,autoplay);
+   }catch(firstErr){
+     // Metadata can contain a temporary direct URL that Safari refuses.
+     // Ask Yandex for a fresh /download URL and retry once.
+     ch.direct=''; ch.href=''; ch.hrefTs=0;
+     src=await getDownload(book.url,ch.path);
+     ch.href=src; ch.hrefTs=Date.now();
+     await setAudioSource(src,time,autoplay);
+   }
+   pstatus('Готово · '+ch.name);saveProgress(true)
+ }catch(e){pstatus('Не удалось открыть дорожку');toast('Не удалось открыть '+ch.name)}finally{loading=false}}
+function togglePlay(){if(!book)return;if(!audio.src){loadChapter(chapterIndex,0,true);return}if(audio.paused)audio.play().catch(async()=>{ // refresh Yandex temporary link once, then retry from the user gesture
+ try{const ch=book.chapters[chapterIndex];ch.href='';ch.hrefTs=0;ch.direct='';const fresh=await getDownload(book.url,ch.path);ch.href=fresh;ch.hrefTs=Date.now();audio.src=fresh;audio.load();await audio.play()}catch{toast('Не удалось запустить дорожку')}});else audio.pause()}
+function seek(delta){if(Number.isFinite(audio.duration))audio.currentTime=Math.max(0,Math.min(audio.duration,audio.currentTime+delta))}
+function updatePlay(){const playing=!audio.paused;$('#playBtn').textContent=playing?'Pause':'Play';$('#playLed').classList.toggle('on',playing);$('#stateText').textContent=playing?'PLAY':'ПАУЗА'}
+function updateProgress(){const d=Number(audio.duration||0),c=Number(audio.currentTime||0),p=d?Math.max(0,Math.min(1,c/d)):0;if(!isSeeking){$('#progress').value=Math.round(p*1000);$('#progress').style.setProperty('--p',`${p*100}%`)}$('#currentTime').textContent=fmt(c);$('#duration').textContent=fmt(d)}
+function saveProgress(force=false){if(!book)return;const now=Date.now();if(!force&&now-saveTick<2500)return;saveTick=now;const k=cleanKey(book.url);state.books[k]={...(state.books[k]||{}),title:book.title,chapter:chapterIndex,time:Number(audio.currentTime||0),duration:Number(audio.duration||0),chapterCount:book.chapters.length,speed:audio.playbackRate||1,updated:now};state.lastUrl=k;saveState();updateResume()}
+function updateResume(){if(!book)return;const r=state.books[cleanKey(book.url)]||{};$('#resume').textContent=`Сохранено: глава ${Number(r.chapter??chapterIndex)+1} · ${fmt(r.time||audio.currentTime||0)}`}
+function restoreSpeed(){if(!book)return;const r=state.books[cleanKey(book.url)]||{};const v=Number(r.speed||1);$('#speed').value=String(v);setSpeed(v)}
+function setSpeed(v){v=Number(v)||1;audio.playbackRate=v;audio.defaultPlaybackRate=v;if(book){const k=cleanKey(book.url),r=state.books[k]||{};r.speed=v;state.books[k]=r;saveState()}}
 
-async function resolvePlayableUrl(chapter){
-  const freshEnough = chapter.href && chapter.hrefTs && Date.now() - chapter.hrefTs < 45 * 60 * 1000;
-  if(freshEnough) return chapter.href;
-  try{
-    const href = await getDownloadLink(book.url, chapter.path || '');
-    chapter.href = href; chapter.hrefTs = Date.now();
-    return href;
-  }catch(err){
-    if(chapter.direct){ chapter.href = chapter.direct; chapter.hrefTs = Date.now(); return chapter.direct; }
-    throw err;
-  }
-}
-async function loadChapter(index, time=0, autoplay=false){
-  if(!book || !book.chapters[index] || loadingChapter) return;
-  loadingChapter = true; retryingFreshLink = false; chapterIndex = index;
-  renderPlaylist();
-  const chapter = book.chapters[index];
-  $('#chapterNow').textContent = chapter.name;
-  playerStatus('Получаю ссылку на файл…');
-  try{
-    const src = await resolvePlayableUrl(chapter);
-    await setAudioSource(src, time, autoplay);
-    updateResumeMeta();
-    playerStatus('Готово к воспроизведению');
-    saveProgress(true);
-  }catch(err){
-    playerStatus('Не удалось открыть дорожку');
-    toast('Не удалось открыть дорожку');
-  }finally{ loadingChapter = false; }
-}
-function setAudioSource(src, time=0, autoplay=false){
-  return new Promise((resolve,reject)=>{
-    const cleanup = ()=>{ audio.removeEventListener('loadedmetadata', onLoaded); audio.removeEventListener('canplay', onCanPlay); audio.removeEventListener('error', onError); };
-    const onLoaded = ()=>{ if(Number.isFinite(time) && time > 0){ try{ audio.currentTime = Math.min(time, Math.max(0, audio.duration || time)); }catch{} } updateProgress(); };
-    const onCanPlay = async ()=>{ cleanup(); if(autoplay){ try{ await audio.play(); }catch{ toast('Нажми Play ещё раз'); } } resolve(true); };
-    const onError = ()=>{ cleanup(); reject(new Error('Аудио не открылось')); };
-    audio.addEventListener('loadedmetadata', onLoaded, { once:true });
-    audio.addEventListener('canplay', onCanPlay, { once:true });
-    audio.addEventListener('error', onError, { once:true });
-    audio.src = src; audio.load();
-  });
-}
+function setSleep(min){sleepDeadline=Date.now()+min*60000;localStorage.setItem('slushayu_sleep_deadline',sleepDeadline);clearInterval(sleepTimer);sleepTimer=setInterval(checkSleep,1000);closeSleep();updateSleep();toast(`Сон через ${min} мин`)}
+function clearSleep(){sleepDeadline=0;localStorage.removeItem('slushayu_sleep_deadline');clearInterval(sleepTimer);sleepTimer=null;closeSleep();updateSleep();toast('Таймер выключен')}
+function checkSleep(){if(!sleepDeadline)return;if(Date.now()>=sleepDeadline){audio.pause();clearInterval(sleepTimer);sleepTimer=null;sleepDeadline=0;localStorage.removeItem('slushayu_sleep_deadline');updateSleep();toast('Таймер сна сработал')}else updateSleep()}
+function updateSleep(){$('#sleepStatus').textContent=sleepDeadline?'Сон: '+Math.ceil((sleepDeadline-Date.now())/60000)+' мин':'Сон: выкл.'}
+function openSleep(){$('#sleepDialog').classList.add('show')}function closeSleep(){$('#sleepDialog').classList.remove('show')}
 
-function updateProgress(){
-  const current = Number(audio.currentTime || 0); const duration = Number(audio.duration || 0); const p = duration ? Math.max(0, Math.min(1, current / duration)) : 0;
-  const progress = $('#progress');
-  if(!isSeeking){ progress.value = String(Math.round(p * 1000)); progress.style.setProperty('--p', `${p*100}%`); }
-  $('#currentTime').textContent = fmt(current); $('#duration').textContent = fmt(duration);
-}
-function togglePlay(){ if(!book) return; if(!audio.src){ loadChapter(chapterIndex, 0, true); return; } audio.paused ? audio.play().catch(()=>toast('Нажми Play ещё раз')) : audio.pause(); }
-function seekBy(delta){ if(Number.isFinite(audio.duration)) audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + delta)); }
-function updatePlayButton(){ $('#playBtn').textContent = audio.paused ? 'Play' : 'Pause'; $('#playLed').classList.toggle('on', !audio.paused); $('#ledText').textContent = audio.paused ? 'ПАУЗА' : 'PLAY'; }
-function updateResumeMeta(){ if(!book) return; const rec = state.books[cleanKey(book.url)] || {}; $('#resumeMeta').textContent = `Сохранено: глава ${(Number(rec.chapter || chapterIndex) + 1)} · ${fmt(rec.time || audio.currentTime || 0)}`; }
-function restoreSpeed(){ if(!book) return; const rec = state.books[cleanKey(book.url)] || {}; const speed = Number(rec.speed || 1); $('#speedSelect').value = String(speed); setSpeed(speed); }
-function setSpeed(value){ const speed = Number(value) || 1; audio.playbackRate = speed; audio.defaultPlaybackRate = speed; if(book){ const key = cleanKey(book.url); const rec = state.books[key] || {}; rec.speed = speed; state.books[key] = rec; saveState(); } }
-function saveProgress(force=false){
-  if(!book) return; const now = Date.now(); if(!force && now - saveTick < 2500) return; saveTick = now;
-  const key = cleanKey(book.url);
-  state.books[key] = { ...(state.books[key] || {}), title:book.title, chapter:chapterIndex, time:Number(audio.currentTime || 0), duration:Number(audio.duration || 0), chapterCount:book.chapters.length, updated:now, source:'yandex', speed:audio.playbackRate || 1 };
-  state.lastUrl = key; saveState(); updateResumeMeta();
-}
+const canvas=$('#viz'),ctx=canvas.getContext('2d');let phase=0;
+function css(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim()}
+function resizeViz(){const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(r.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0)}
+function drawViz(){const r=canvas.getBoundingClientRect(),w=r.width,h=r.height;ctx.clearRect(0,0,w,h);const bars=Math.max(20,Math.floor(w/13)),gap=3,bw=Math.max(4,(w-gap*(bars-1))/bars),segs=10,sg=2,sh=Math.max(3,(h-(segs-1)*sg)/segs);phase+=audio.paused?.035:.12;for(let i=0;i<bars;i++){const env=.35+.65*Math.sin(Math.PI*(i+1)/(bars+1)),pulse=(Math.sin(phase+i*.48)+Math.sin(phase*.57+i*.21)+2)/4,level=audio.paused?1+Math.floor(env*2):Math.max(1,Math.round((1+pulse*8.8)*env));for(let s=0;s<segs;s++){const y=h-(s+1)*sh-s*sg;let c=css('--eqOff');if(s<level)c=s<5?css('--eq1'):s<8?css('--eq2'):css('--eq3');ctx.fillStyle=c;ctx.fillRect(i*(bw+gap),y,bw,sh)}}requestAnimationFrame(drawViz)}
 
-function setSleep(minutes){ sleepDeadline = Date.now() + minutes * 60000; localStorage.setItem('slushayu_sleep_deadline', String(sleepDeadline)); if(sleepTimer) clearInterval(sleepTimer); sleepTimer = setInterval(checkSleep, 1000); updateSleepLabel(); closeSleepDialog(); toast(`Сон через ${minutes} мин`); }
-function clearSleep(){ sleepDeadline = 0; localStorage.removeItem('slushayu_sleep_deadline'); if(sleepTimer) clearInterval(sleepTimer); sleepTimer = null; updateSleepLabel(); closeSleepDialog(); toast('Таймер сна выключен'); }
-function checkSleep(){ if(!sleepDeadline) return; const left = sleepDeadline - Date.now(); if(left <= 0){ audio.pause(); sleepDeadline = 0; localStorage.removeItem('slushayu_sleep_deadline'); if(sleepTimer) clearInterval(sleepTimer); sleepTimer = null; updateSleepLabel(); toast('Таймер сна сработал'); } else updateSleepLabel(); }
-function updateSleepLabel(){ $('#sleepInfo').textContent = sleepDeadline ? 'Сон: ' + Math.ceil(Math.max(0, sleepDeadline - Date.now()) / 60000) + ' мин' : 'Сон: выкл.'; }
-function openSleepDialog(){ $('#sleepDialog').classList.add('show'); }
-function closeSleepDialog(){ $('#sleepDialog').classList.remove('show'); }
-function updateClock(){ const d = new Date(); $('#clockLabel').textContent = d.toLocaleTimeString('ru-RU',{hour:'2-digit', minute:'2-digit'}); }
-
-const vizCanvas = $('#viz');
-const vizCtx = vizCanvas.getContext('2d');
-let vizPhase = 0;
-function resizeViz(){ const r = vizCanvas.getBoundingClientRect(); const dpr = Math.min(window.devicePixelRatio || 1, 2); vizCanvas.width = Math.max(1, Math.round(r.width * dpr)); vizCanvas.height = Math.max(1, Math.round(r.height * dpr)); vizCtx.setTransform(dpr,0,0,dpr,0,0); }
-function themeVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-function drawViz(){
-  const w = vizCanvas.getBoundingClientRect().width; const h = vizCanvas.getBoundingClientRect().height;
-  vizCtx.clearRect(0,0,w,h);
-  const bars = Math.max(18, Math.floor(w / 14));
-  const gap = 3;
-  const bw = Math.max(6, (w - gap * (bars - 1)) / bars);
-  const segments = 12;
-  const segGap = 2;
-  const segH = Math.max(4, (h - (segments - 1) * segGap) / segments);
-  const offColor = themeVar('--eq-off');
-  const c1 = themeVar('--eq-on-1');
-  const c2 = themeVar('--eq-on-2');
-  const c3 = themeVar('--eq-on-3');
-  const grid = themeVar('--eq-grid');
-  const bg = themeVar('--eq-bg');
-  vizCtx.fillStyle = bg; vizCtx.fillRect(0,0,w,h);
-  vizCtx.strokeStyle = grid; vizCtx.lineWidth = 1;
-  for(let gy=0; gy<segments; gy++){ const y = h - gy * (segH + segGap) - 1; vizCtx.beginPath(); vizCtx.moveTo(0, y); vizCtx.lineTo(w, y); vizCtx.stroke(); }
-  vizPhase += audio.paused ? 0.035 : 0.11;
-  for(let i=0;i<bars;i++){
-    const x = i * (bw + gap);
-    const envelope = 0.4 + 0.6 * Math.sin(Math.PI * (i + 1) / (bars + 1));
-    const pulse = (Math.sin(vizPhase + i * 0.42) + Math.sin(vizPhase * 0.61 + i * 0.21) + 2) / 4;
-    const level = audio.paused ? 1 + Math.round(envelope * 2) : Math.max(1, Math.round((1.3 + pulse * 9.7) * envelope));
-    for(let s=0; s<segments; s++){
-      const y = h - (s + 1) * segH - s * segGap;
-      let color = offColor;
-      if(s < level){
-        if(s < segments * 0.55) color = c1;
-        else if(s < segments * 0.82) color = c2;
-        else color = c3;
-      }
-      vizCtx.fillStyle = color;
-      vizCtx.fillRect(x, y, bw, segH);
-    }
-    const peak = Math.min(segments - 1, Math.max(0, level));
-    const peakY = h - (peak + 1) * segH - peak * segGap - 1;
-    vizCtx.fillStyle = c3;
-    vizCtx.fillRect(x, peakY, bw, 2);
-  }
-  requestAnimationFrame(drawViz);
-}
-
-$('#lightThemeBtn').addEventListener('click', ()=>setTheme('light'));
-$('#darkThemeBtn').addEventListener('click', ()=>setTheme('dark'));
-$('#themeTogglePlayer').addEventListener('click', toggleTheme);
-$('#themeBtnInline').addEventListener('click', toggleTheme);
-$('#pasteBtn').addEventListener('click', async ()=>{ try{ $('#urlInput').value = await navigator.clipboard.readText(); toast('Вставлено'); }catch{ toast('Не удалось прочитать буфер'); } });
-$('#loadBtn').addEventListener('click', ()=>openUrl($('#urlInput').value, false));
-$('#continueBtn').addEventListener('click', ()=> state.lastUrl ? openUrl(state.lastUrl, false) : toast('Пока нет сохранённой книги'));
-$('#homeBtn').addEventListener('click', showHome);
-$('#playBtn').addEventListener('click', togglePlay);
-$('#back15').addEventListener('click', ()=>seekBy(-15));
-$('#forward15').addEventListener('click', ()=>seekBy(15));
-$('#speedSelect').addEventListener('change', e=>setSpeed(e.target.value));
-$('#sleepBtn').addEventListener('click', openSleepDialog);
-$('#closeSleepDialog').addEventListener('click', closeSleepDialog);
-$('#sleepDialog').addEventListener('click', e=>{ if(e.target === $('#sleepDialog')) closeSleepDialog(); });
-$('#sleepOff').addEventListener('click', clearSleep);
-$$('.sleep-preset').forEach(btn=>btn.addEventListener('click', ()=>setSleep(Number(btn.dataset.min))));
-$('#customSleepBtn').addEventListener('click', ()=>{ const n = Number($('#customSleep').value); if(n >= 1 && n <= 600) setSleep(n); else toast('От 1 до 600 минут'); });
-$('#sourceBtn').addEventListener('click', ()=>{ if(book) window.open(book.url, '_blank', 'noopener'); });
-$('#progress').addEventListener('input', e=>{ isSeeking = true; const p = Number(e.target.value)/1000; e.target.style.setProperty('--p', `${p*100}%`); $('#currentTime').textContent = fmt((audio.duration || 0) * p); });
-$('#progress').addEventListener('change', e=>{ if(Number.isFinite(audio.duration)) audio.currentTime = audio.duration * (Number(e.target.value)/1000); isSeeking = false; saveProgress(true); });
-
-$('#urlInput').addEventListener('keydown', e=>{ if((e.metaKey || e.ctrlKey) && e.key === 'Enter') openUrl($('#urlInput').value, false); });
-
-audio.addEventListener('loadedmetadata', updateProgress);
-audio.addEventListener('timeupdate', ()=>{ updateProgress(); saveProgress(); checkSleep(); });
-audio.addEventListener('durationchange', updateProgress);
-audio.addEventListener('play', ()=>{ updatePlayButton(); playerStatus('Воспроизведение'); });
-audio.addEventListener('pause', ()=>{ updatePlayButton(); saveProgress(true); if(!loadingChapter) playerStatus('Пауза'); });
-audio.addEventListener('ended', ()=>{ saveProgress(true); if(book && chapterIndex < book.chapters.length - 1) loadChapter(chapterIndex + 1, 0, true); });
-audio.addEventListener('error', async ()=>{
-  if(!book || loadingChapter || retryingFreshLink) return;
-  retryingFreshLink = true;
-  try{
-    const chapter = book.chapters[chapterIndex];
-    chapter.href = ''; chapter.hrefTs = 0;
-    const fresh = await resolvePlayableUrl(chapter);
-    await setAudioSource(fresh, Number(audio.currentTime || 0), true);
-    playerStatus('Ссылка обновлена');
-  }catch{
-    playerStatus('Не удалось воспроизвести дорожку');
-    toast('Не удалось воспроизвести дорожку');
-  }finally{ retryingFreshLink = false; }
-});
-
-document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveProgress(true); else { checkSleep(); updateProgress(); } });
-window.addEventListener('pagehide', ()=>saveProgress(true));
-window.addEventListener('resize', resizeViz);
-
-setTheme(state.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-$('#urlInput').value = state.lastUrl || EXAMPLE;
-renderLibrary();
-updatePlayButton();
-updateSleepLabel();
-updateClock();
-setInterval(updateClock, 15000);
-resizeViz();
-drawViz();
-if(sleepDeadline > Date.now()) sleepTimer = setInterval(checkSleep, 1000); else { sleepDeadline = 0; localStorage.removeItem('slushayu_sleep_deadline'); }
-if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js?' + SW_VERSION).catch(()=>{}));
+$('#homeTheme').onclick=toggleTheme;$('#playerTheme').onclick=toggleTheme;$('#lightBtn').onclick=()=>setTheme('light');$('#darkBtn').onclick=()=>setTheme('dark');
+$('#pasteBtn').onclick=async()=>{try{$('#urlInput').value=await navigator.clipboard.readText();toast('Вставлено')}catch{toast('Не удалось прочитать буфер')}};$('#loadBtn').onclick=()=>openUrl($('#urlInput').value,false);$('#continueBtn').onclick=()=>state.lastUrl?openUrl(state.lastUrl,false):toast('Нет сохранённой книги');$('#homeBtn').onclick=showHome;
+$('#playBtn').onclick=togglePlay;$('#back15').onclick=()=>seek(-15);$('#forward15').onclick=()=>seek(15);$('#speed').onchange=e=>setSpeed(e.target.value);$('#sourceBtn').onclick=()=>book&&window.open(book.url,'_blank','noopener');$('#sleepBtn').onclick=openSleep;$('#closeSleep').onclick=closeSleep;$('#sleepDialog').onclick=e=>{if(e.target===$('#sleepDialog'))closeSleep()};$$('.sleepPreset').forEach(b=>b.onclick=()=>setSleep(Number(b.dataset.min)));$('#sleepOff').onclick=clearSleep;$('#customSleepBtn').onclick=()=>{const n=Number($('#customSleep').value);n>=1&&n<=600?setSleep(n):toast('От 1 до 600 минут')};
+$('#progress').oninput=e=>{isSeeking=true;const p=Number(e.target.value)/1000;e.target.style.setProperty('--p',`${p*100}%`);$('#currentTime').textContent=fmt((audio.duration||0)*p)};$('#progress').onchange=e=>{if(Number.isFinite(audio.duration))audio.currentTime=audio.duration*(Number(e.target.value)/1000);isSeeking=false;saveProgress(true)};
+audio.addEventListener('loadedmetadata',updateProgress);audio.addEventListener('durationchange',updateProgress);audio.addEventListener('timeupdate',()=>{updateProgress();saveProgress();checkSleep()});audio.addEventListener('play',()=>{updatePlay();pstatus('Воспроизведение · '+(book?.chapters[chapterIndex]?.name||''))});audio.addEventListener('pause',()=>{updatePlay();saveProgress(true);if(!loading)pstatus('Пауза')});audio.addEventListener('ended',()=>{saveProgress(true);if(book&&chapterIndex<book.chapters.length-1)loadChapter(chapterIndex+1,0,true)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveProgress(true);else{checkSleep();updateProgress()}});window.addEventListener('pagehide',()=>saveProgress(true));window.addEventListener('resize',resizeViz);
+function tickClock(){$('#clock').textContent=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}
+setTheme(state.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));$('#urlInput').value=state.lastUrl||EXAMPLE;renderLibrary();updatePlay();updateSleep();tickClock();setInterval(tickClock,15000);resizeViz();drawViz();if(sleepDeadline>Date.now())sleepTimer=setInterval(checkSleep,1000);else{sleepDeadline=0;localStorage.removeItem('slushayu_sleep_deadline')}
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?'+SW_VERSION).catch(()=>{}));
 })();
 </script>
 </body>
