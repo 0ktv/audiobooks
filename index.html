@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="Слушаю" />
   <meta name="mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <title>Слушаю — аудиокниги</title>
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <title>Слушаю — аудиокниги v3</title>
   <style>
     :root{
       color-scheme:dark;
@@ -206,10 +206,6 @@
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const audio=$('#audio');
-const urlInput=$('#urlInput'), loadBtn=$('#loadBtn'), pasteBtn=$('#pasteBtn'), homeBtn=$('#homeBtn');
-const playBtn=$('#playBtn'), back15=$('#back15'), forward15=$('#forward15'), speedBtn=$('#speedBtn'), sleepBtn=$('#sleepBtn'), sourceBtn=$('#sourceBtn');
-const progress=$('#progress'), currentTime=$('#currentTime'), duration=$('#duration'), speedSheet=$('#speedSheet'), sleepSheet=$('#sleepSheet');
-const sleepOff=$('#sleepOff'), customSleep=$('#customSleep'), customSleepBtn=$('#customSleepBtn');
 const STORE='slushayu_pwa_v2';
 const LEGACY='ab_player_v1';
 const EXAMPLE='https://knigi-audio.ru/roman-proza/51636-dvesti-tretij-den-zimy-olga-pticeva.html';
@@ -233,7 +229,8 @@ function normalizeInput(raw){let url=(raw||'').trim();if(!url)throw new Error('�
 function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;if(n>10&&n<20)return c;if(n1>1&&n1<5)return b;if(n1===1)return a;return c}
 function svgCover(title){const safe=(title||'AUDIOBOOK').slice(0,64).replace(/[&<>"']/g,'');const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><defs><radialGradient id="g"><stop stop-color="#313743"/><stop offset="1" stop-color="#0e1116"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><circle cx="450" cy="130" r="190" fill="#c6ff4f" opacity=".12"/><text x="42" y="470" fill="#fff" font-size="42" font-family="Arial" font-weight="700">СЛУШАЮ</text><text x="42" y="515" fill="#c6ff4f" font-size="17" font-family="Arial">${safe}</text></svg>`;return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}
 
-async function fetchText(url){
+async function fetchRemoteText(url, kind='page'){
+  const isPage=kind==='page';
   const attempts=[
     {name:'напрямую',url},
     {name:'AllOrigins',url:'https://api.allorigins.win/raw?url='+encodeURIComponent(url)},
@@ -242,48 +239,214 @@ async function fetchText(url){
   const errors=[];
   for(const a of attempts){
     try{
-      status(`Подключаюсь · ${a.name}…`);
+      status(`${isPage?'Открываю страницу':'Читаю плейлист'} · ${a.name}…`);
       const ctl=new AbortController(), timer=setTimeout(()=>ctl.abort(),18000);
-      const r=await fetch(a.url,{cache:'no-store',signal:ctl.signal,headers:{Accept:'text/html,application/xhtml+xml'}});clearTimeout(timer);
+      const r=await fetch(a.url,{cache:'no-store',signal:ctl.signal,headers:{Accept:isPage?'text/html,application/xhtml+xml,*/*;q=.8':'application/json,text/plain,*/*'}});
+      clearTimeout(timer);
       const txt=await r.text();
       if(!r.ok)throw new Error(`HTTP ${r.status}`);
-      if(txt.length<500)throw new Error('слишком короткий ответ');
+      if(txt.length<(isPage?500:8))throw new Error('слишком короткий ответ');
       if(/captcha|cloudflare|access denied|forbidden/i.test(txt.slice(0,5000)))throw new Error('защитная страница');
-      return {html:txt,via:a.name};
+      return {text:txt,via:a.name,url};
     }catch(e){errors.push(`${a.name}: ${e.message}`)}
   }
-  throw new Error('Не удалось получить страницу. '+errors.join(' · '));
+  const err=new Error(errors.join(' · '));
+  err.attempts=errors;
+  throw err;
 }
-function absUrl(value,pageUrl){if(!value||typeof value!=='string')return null;value=value.trim().replace(/^['"]|['"]$/g,'').replace(/\\\//g,'/').replace(/&amp;/g,'&');try{return new URL(value,pageUrl).href}catch{return null}}
-function isAudioUrl(u){if(!u)return false;const s=u.toLowerCase();return /\.(mp3|m4a|aac|ogg|oga|opus|wav|m3u8)(?:$|[?#])/i.test(s)||(/(?:audio|audiobook|track|chapter|mp3)[_\/-]/i.test(s)&&/^https?:/i.test(s))}
-function cleanName(s,fallback='Глава'){s=(s||'').replace(/\s+/g,' ').replace(/[<>]/g,'').trim();return(!s||s.length>120)?fallback:s}
-function tryDecodeBase64(s){try{if(!/^[A-Za-z0-9+/=_-]{40,}$/.test(s))return null;let x=s.replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';const out=decodeURIComponent([...atob(x)].map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join(''));return /https?:\/\//i.test(out)?out:null}catch{return null}}
-function extractBook(html,pageUrl){
-  const doc=new DOMParser().parseFromString(html,'text/html');
-  const title=cleanName(doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('h1')?.textContent||doc.title||'Аудиокнига','Аудиокнига');
-  let cover=absUrl(doc.querySelector('meta[property="og:image"]')?.content,pageUrl);
-  if(!cover){const imgs=[...doc.images].map(i=>({src:absUrl(i.getAttribute('src')||i.getAttribute('data-src'),pageUrl),area:(i.width||0)*(i.height||0)})).filter(x=>x.src);cover=(imgs.sort((a,b)=>b.area-a.area)[0]||{}).src||''}
-  const found=[],seen=new Map();
-  const push=(url,name,source='dom')=>{url=absUrl(url,pageUrl);if(!url||!isAudioUrl(url))return;const nm=cleanName(name,`Глава ${found.length+1}`);if(seen.has(url)){const i=seen.get(url);if(/^Глава\s+\d+$/i.test(found[i].name)&&!/^Глава\s+\d+$/i.test(nm))found[i].name=nm;return}seen.set(url,found.length);found.push({url,name:nm,source})};
-  doc.querySelectorAll('audio,source,a,[data-src],[data-file],[data-url],[data-audio],[data-mp3]').forEach((el,idx)=>{const vals=['src','href','data-src','data-file','data-url','data-audio','data-mp3'].map(a=>el.getAttribute(a)).filter(Boolean);const label=el.getAttribute('title')||el.getAttribute('data-title')||el.getAttribute('aria-label')||el.textContent||`Глава ${idx+1}`;vals.forEach(v=>push(v,label,'element'))});
-  const raw=html.replace(/\\u002F/gi,'/').replace(/\\x2F/gi,'/').replace(/\\\//g,'/');
-  const urlRe=/(https?:\/\/[^\s"'<>\\]+?\.(?:mp3|m4a|aac|ogg|oga|opus|wav|m3u8)(?:\?[^\s"'<>\\]*)?)/gi;let m;
-  while((m=urlRe.exec(raw)))push(m[1],`Глава ${found.length+1}`,'regex');
-  const pairPatterns=[/(?:title|name|label)\s*[:=]\s*["']([^"']{1,120})["'][\s\S]{0,300}?(?:file|src|url)\s*[:=]\s*["']([^"']+)["']/gi,/(?:file|src|url)\s*[:=]\s*["']([^"']+)["'][\s\S]{0,300}?(?:title|name|label)\s*[:=]\s*["']([^"']{1,120})["']/gi];
-  pairPatterns.forEach((re,ri)=>{let q;while((q=re.exec(raw))){ri===0?push(q[2],q[1],'script-pair'):push(q[1],q[2],'script-pair')}});
-  const playerFile=/\bfile\s*[:=]\s*["']([^"']{20,})["']/gi;while((m=playerFile.exec(raw))){const val=m[1];if(val.includes(',')){val.split(',').forEach(part=>{const mm=part.match(/^\s*\[([^\]]+)\]\s*(.+)$/);push(mm?mm[2]:part,mm?mm[1]:`Глава ${found.length+1}`,'player-file')})}else push(val,`Глава ${found.length+1}`,'player-file')}
-  const strings=raw.match(/[A-Za-z0-9+/_=-]{60,}/g)||[];for(const s of strings.slice(0,300)){const decoded=tryDecodeBase64(s);if(!decoded)continue;let z;urlRe.lastIndex=0;while((z=urlRe.exec(decoded)))push(z[1],`Глава ${found.length+1}`,'base64')}
-  return {url:cleanKey(pageUrl),title,cover,chapters:found};
+const FETCHERS=[
+  {name:'напрямую',make:u=>u},
+  {name:'AllOrigins',make:u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)},
+  {name:'CorsProxy',make:u=>'https://corsproxy.io/?url='+encodeURIComponent(u)}
+];
+async function fetchOne(url,fetcher,timeout=18000){
+  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeout);
+  try{
+    const r=await fetch(fetcher.make(url),{cache:'no-store',signal:ctl.signal,headers:{Accept:'text/html,application/json,text/plain,*/*'}});
+    const txt=await r.text();
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    if(txt.length<20)throw new Error('пустой ответ');
+    if(/captcha|cloudflare|access denied|forbidden/i.test(txt.slice(0,5000)))throw new Error('защитная страница');
+    return {html:txt,via:fetcher.name,finalUrl:r.url};
+  }finally{clearTimeout(timer)}
+}
+async function fetchText(url){
+  const errors=[];
+  for(const f of FETCHERS){
+    try{status(`Проверяю плеер · ${f.name}…`);return await fetchOne(url,f)}
+    catch(e){errors.push(`${f.name}: ${e.message}`)}
+  }
+  throw new Error('Не удалось получить ресурс. '+errors.join(' · '));
+}
+async function fetchVariants(url){
+  const ok=[],errors=[];
+  for(const f of FETCHERS){
+    try{status(`Получаю страницу · ${f.name}…`);ok.push(await fetchOne(url,f))}
+    catch(e){errors.push(`${f.name}: ${e.message}`)}
+  }
+  if(!ok.length)throw new Error('Не удалось получить страницу. '+errors.join(' · '));
+  return ok;
+}
+function decodeValue(value){
+  if(value==null)return '';
+  let v=String(value).trim();
+  try{v=new DOMParser().parseFromString('<textarea>'+v+'</textarea>','text/html').querySelector('textarea').value}catch{}
+  return v.replace(/\\u002[fF]/g,'/').replace(/\\x2[fF]/g,'/').replace(/\\\//g,'/').replace(/^['"]|['"]$/g,'').trim();
+}
+function absUrl(value,pageUrl){
+  value=decodeValue(value);if(!value)return null;
+  if(/^data:|^blob:|^javascript:|^mailto:/i.test(value))return null;
+  try{return new URL(value,pageUrl).href}catch{return null}
+}
+function isAudioExt(u){return /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|m3u8)(?:$|[?#])/i.test(u||'')}
+function looksPlayerResource(u){return /(?:player|playlist|audio|audiobook|track|stream|listen|ajax|engine|media|book)[^\s]*?(?:\.php|\.json|\.js|\/|\?|$)/i.test(u||'')}
+function cleanName(s,fallback='Глава'){s=(s||'').replace(/\s+/g,' ').replace(/[<>]/g,'').trim();return(!s||s.length>140)?fallback:s}
+function tryDecodeBase64(s){try{if(!/^[A-Za-z0-9+/=_-]{40,}$/.test(s))return null;let x=s.replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';const bin=atob(x);let out='';try{out=new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}catch{out=bin}return /https?:\/\/|\.(?:mp3|m4a|m3u8)/i.test(out)?out:null}catch{return null}}
+function splitPacked(value){
+  const v=decodeValue(value);if(!v)return [];
+  if((v.startsWith('[')&&v.endsWith(']'))||(v.startsWith('{')&&v.endsWith('}'))){try{return [JSON.parse(v)]}catch{}}
+  if(v.includes('|')&&/https?:|\.(?:mp3|m4a|m3u8)/i.test(v))return v.split('|').map(x=>x.trim()).filter(Boolean);
+  if(v.includes(',')&&(/\[[^\]]+\]\s*(?:https?:|\/)/i.test(v)||(v.match(/https?:\/\//g)||[]).length>1))return v.split(/,(?=\s*(?:\[[^\]]+\]\s*)?(?:https?:\/\/|\/))/).map(x=>x.trim()).filter(Boolean);
+  return [v];
+}
+function inspectPayload(text,baseUrl){
+  const audios=[],resources=[],meta={title:'',cover:''};
+  const audioSeen=new Set(),resSeen=new Set();
+  const addAudio=(value,name,trust=false,source='scan')=>{
+    const walk=(v,label)=>{
+      if(v==null)return;
+      if(Array.isArray(v)){v.forEach((x,i)=>walk(x,label||`Глава ${i+1}`));return}
+      if(typeof v==='object'){
+        const nm=cleanName(v.title||v.name||v.label||v.chapter||label||'');
+        for(const [k,val] of Object.entries(v)){
+          if(/^(file|audio|mp3|stream|track|url|src|source)$/i.test(k))walk(val,nm);
+          else if(/playlist|tracks|chapters|files|items/i.test(k))walk(val,nm);
+        }
+        return;
+      }
+      const raw=decodeValue(v);if(!raw)return;
+      const tagged=raw.match(/^\s*\[([^\]]{1,140})\]\s*(.+)$/);if(tagged){walk(tagged[2],tagged[1]);return}
+      const b64=tryDecodeBase64(raw);if(b64&&b64!==raw){scanRaw(b64,label);return}
+      if(trust&&!isAudioExt(raw)&&!(/^(?:https?:)?\/\//i.test(raw)||/^\.{0,2}\//.test(raw)||/[/?=&]/.test(raw)))return;
+      const u=absUrl(raw,baseUrl);if(!u)return;
+      if(!trust&&!isAudioExt(u))return;
+      if(audioSeen.has(u))return;audioSeen.add(u);
+      audios.push({url:u,name:cleanName(label,`Глава ${audios.length+1}`),source});
+    };
+    splitPacked(value).forEach(v=>walk(v,name));
+  };
+  const addResource=(value,type='resource',priority=5)=>{
+    const u=absUrl(value,baseUrl);if(!u||resSeen.has(u))return;
+    if(!/^https?:/i.test(u))return;
+    resSeen.add(u);resources.push({url:u,type,priority});
+  };
+  const inspectJson=(obj,label='')=>{
+    if(obj==null)return;
+    if(Array.isArray(obj)){obj.forEach((v,i)=>inspectJson(v,label||`Глава ${i+1}`));return}
+    if(typeof obj!=='object')return;
+    const nm=cleanName(obj.title||obj.name||obj.label||obj.chapter||label||'');
+    for(const [k,v] of Object.entries(obj)){
+      if(typeof v==='string'){
+        if(/^(file|audio|mp3|stream|track|source)$/i.test(k))addAudio(v,nm,true,'json:'+k);
+        else if(/^(url|src)$/i.test(k)){isAudioExt(v)?addAudio(v,nm,false,'json:'+k):(/^https?:|^\//.test(v)&&looksPlayerResource(v)&&addResource(v,'json-url',2))}
+        else if(/playlist|config|endpoint|api/i.test(k))addResource(v,'json:'+k,1);
+      }
+      if(typeof v==='object')inspectJson(v,nm);
+    }
+  };
+  function scanRaw(raw,label=''){
+    raw=String(raw||'').replace(/\\u002[fF]/g,'/').replace(/\\x2[fF]/g,'/').replace(/\\\//g,'/');
+    let m;
+    const absAudio=/(https?:\/\/[^\s"'<>\\]+?\.(?:mp3|m4a|aac|ogg|oga|opus|wav|flac|m3u8)(?:\?[^\s"'<>\\]*)?)/gi;
+    while((m=absAudio.exec(raw)))addAudio(m[1],label||`Глава ${audios.length+1}`,false,'raw-url');
+    const relAudio=/(["'])(\/[^"']+?\.(?:mp3|m4a|aac|ogg|oga|opus|wav|flac|m3u8)(?:\?[^"']*)?)\1/gi;
+    while((m=relAudio.exec(raw)))addAudio(m[2],label||`Глава ${audios.length+1}`,false,'raw-relative');
+    const trusted=/\b(file|audio|mp3|stream|track|source)\s*[:=]\s*["']([^"']{3,})["']/gi;
+    while((m=trusted.exec(raw)))addAudio(m[2],label||`Глава ${audios.length+1}`,true,'key:'+m[1]);
+    const named1=/(?:title|name|label|chapter)\s*[:=]\s*["']([^"']{1,140})["'][\s\S]{0,500}?(?:file|audio|mp3|stream|track|source)\s*[:=]\s*["']([^"']+)["']/gi;
+    while((m=named1.exec(raw)))addAudio(m[2],m[1],true,'named-pair');
+    const named2=/(?:file|audio|mp3|stream|track|source)\s*[:=]\s*["']([^"']+)["'][\s\S]{0,500}?(?:title|name|label|chapter)\s*[:=]\s*["']([^"']{1,140})["']/gi;
+    while((m=named2.exec(raw)))addAudio(m[1],m[2],true,'named-pair');
+    const playlist=/\b(?:playlist|config|endpoint|api)\s*[:=]\s*["']([^"']{2,})["']/gi;
+    while((m=playlist.exec(raw)))addResource(m[1],'inline-'+m[0].split(/\s/)[0],1);
+    const ajaxStr=/["']([^"']*(?:ajax|player|playlist|audio|stream|track)[^"']*(?:\.php|\.json|\?|\/)[^"']*)["']/gi;
+    let n=0;while((m=ajaxStr.exec(raw))&&n<30){if(!/\.(css|png|jpe?g|svg|woff2?)(?:\?|$)/i.test(m[1])){addResource(m[1],'inline-endpoint',3);n++}}
+    const strings=raw.match(/[A-Za-z0-9+/_=-]{70,}/g)||[];
+    for(const s of strings.slice(0,120)){const d=tryDecodeBase64(s);if(d)scanRaw(d,label)}
+  }
+  const htmlish=/<(?:html|body|div|audio|iframe|script|meta|source)\b/i.test(text||'');
+  if(htmlish){
+    const doc=new DOMParser().parseFromString(text,'text/html');
+    meta.title=cleanName(doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('h1')?.textContent||doc.title||'','');
+    meta.cover=absUrl(doc.querySelector('meta[property="og:image"]')?.content,baseUrl)||'';
+    doc.querySelectorAll('audio,source').forEach((el,i)=>{
+      const label=el.getAttribute('title')||el.getAttribute('data-title')||el.getAttribute('aria-label')||`Глава ${i+1}`;
+      ['src','data-src','data-file','data-audio'].forEach(a=>{const v=el.getAttribute(a);if(v)addAudio(v,label,true,'media-element')});
+    });
+    doc.querySelectorAll('[data-file],[data-audio],[data-mp3],[data-track],[data-stream],[data-source]').forEach((el,i)=>{
+      const label=el.getAttribute('data-title')||el.getAttribute('title')||el.getAttribute('aria-label')||el.textContent||`Глава ${i+1}`;
+      ['data-file','data-audio','data-mp3','data-track','data-stream','data-source'].forEach(a=>{const v=el.getAttribute(a);if(v)addAudio(v,label,true,'data-attr')});
+    });
+    doc.querySelectorAll('[data-playlist],[data-config],[data-endpoint],[data-api]').forEach(el=>['data-playlist','data-config','data-endpoint','data-api'].forEach(a=>{const v=el.getAttribute(a);if(v){const packed=splitPacked(v);packed.forEach(x=>typeof x==='object'?inspectJson(x):addResource(x,'data-'+a,1))}}));
+    doc.querySelectorAll('a[href]').forEach((el,i)=>{const h=el.getAttribute('href');if(isAudioExt(h))addAudio(h,el.textContent||`Глава ${i+1}`,false,'audio-link')});
+    doc.querySelectorAll('iframe[src]').forEach(el=>addResource(el.getAttribute('src'),'iframe',0));
+    let scriptCount=0;
+    doc.querySelectorAll('script[src]').forEach(el=>{const src=el.getAttribute('src');if(scriptCount<10&&(/player|audio|main|app|custom|engine|script|bundle/i.test(src||'')||scriptCount<4)){addResource(src,'script',4);scriptCount++}});
+    doc.querySelectorAll('script[type*="json"],script[type="application/ld+json"]').forEach(el=>{try{inspectJson(JSON.parse(el.textContent||''))}catch{}});
+    if(!meta.cover){const imgs=[...doc.images].map(i=>({src:absUrl(i.getAttribute('src')||i.getAttribute('data-src'),baseUrl),area:(i.width||0)*(i.height||0)})).filter(x=>x.src);meta.cover=(imgs.sort((a,b)=>b.area-a.area)[0]||{}).src||''}
+  }else{
+    try{inspectJson(JSON.parse(text))}catch{}
+  }
+  scanRaw(text);
+  resources.sort((a,b)=>a.priority-b.priority);
+  return {meta,audios,resources};
+}
+async function discoverBook(html,pageUrl){
+  const first=inspectPayload(html,pageUrl),chapters=[],audioSeen=new Set();
+  const discoveredResources=[];
+  const addChapters=(arr)=>arr.forEach(ch=>{if(!audioSeen.has(ch.url)){audioSeen.add(ch.url);chapters.push(ch)}});
+  addChapters(first.audios);discoveredResources.push(...first.resources);
+  const queue=[...first.resources],seenRes=new Set(),debugResources=[];
+  let fetched=0;
+  while(queue.length&&fetched<16&&chapters.length<400){
+    const r=queue.shift();if(!r?.url||seenRes.has(r.url))continue;seenRes.add(r.url);debugResources.push(`${r.type}: ${r.url}`);
+    try{
+      status(`Ищу дорожки · ${r.type} ${fetched+1}/16…`);
+      const got=await fetchText(r.url);fetched++;
+      const ex=inspectPayload(got.html,r.url);addChapters(ex.audios);
+      ex.resources.forEach(n=>{if(!seenRes.has(n.url)&&queue.length<40)queue.push(n)});
+    }catch(e){debugResources.push(`ошибка: ${r.url} → ${e.message}`);fetched++}
+  }
+  return {url:cleanKey(pageUrl),title:first.meta.title||'Аудиокнига',cover:first.meta.cover||'',chapters,debugResources};
+}
+function makeDebug(html,resources=[]){
+  const raw=String(html||'').replace(/\s+/g,' ');const keys=['player','playlist','audio','iframe','ajax','data-file','stream','track'];const parts=[];
+  for(const k of keys){let from=0,hits=0;while(hits<3){const i=raw.toLowerCase().indexOf(k,from);if(i<0)break;parts.push(`…${raw.slice(Math.max(0,i-220),Math.min(raw.length,i+520))}…`);from=i+k.length;hits++}}
+  return `РЕСУРСЫ ПЛЕЕРА:\n${resources.slice(0,40).join('\n')||'не обнаружены'}\n\nФРАГМЕНТЫ HTML/JS:\n${parts.join('\n\n')||raw.slice(0,12000)}`;
 }
 
 async function openUrl(raw,restore=true){
   let url;try{url=normalizeInput(raw)}catch(e){status(e.message,true);return}
-  $('#loadBtn').disabled=true;$('#loadBtn').innerHTML='Загружаю…';
+  $('#loadBtn').disabled=true;$('#loadBtn').innerHTML='Загружаю…';$('#debug').classList.remove('show');
+  let bestDebug='',lastErr='';
   try{
-    const {html,via}=await fetchText(url);status('Собираю главы…');const parsed=extractBook(html,url);
-    if(!parsed.chapters.length){$('#debug').textContent=html.slice(0,12000);$('#debug').classList.add('show');throw new Error('Страница получена, но аудиодорожки не найдены. Похоже, сайт отдаёт плейлист отдельным запросом.')}
-    parsed.via=via;book=parsed;state.lastUrl=url;state.books[url]=state.books[url]||{};Object.assign(state.books[url],{title:book.title,cover:book.cover,chapterCount:book.chapters.length,updated:Date.now()});saveState();renderBook();
-    const saved=state.books[url];chapterIndex=restore?Math.min(saved.chapter||0,book.chapters.length-1):0;await loadChapter(chapterIndex,restore?(saved.time||0):0,false);showPlayer();toast(`Найдено ${book.chapters.length} ${plural(book.chapters.length,'глава','главы','глав')}`);
+    const variants=await fetchVariants(url);
+    for(let i=0;i<variants.length;i++){
+      const variant=variants[i];
+      try{
+        status(`Анализирую плеер · ${variant.via}…`);
+        const parsed=await discoverBook(variant.html,url);parsed.via=variant.via;
+        if(parsed.chapters.length){
+          book=parsed;state.lastUrl=url;state.books[url]=state.books[url]||{};
+          Object.assign(state.books[url],{title:book.title,cover:book.cover,chapterCount:book.chapters.length,updated:Date.now()});saveState();renderBook();
+          const saved=state.books[url];chapterIndex=restore?Math.min(saved.chapter||0,book.chapters.length-1):0;
+          await loadChapter(chapterIndex,restore?(saved.time||0):0,false);showPlayer();status('');toast(`Найдено ${book.chapters.length} ${plural(book.chapters.length,'глава','главы','глав')}`);return;
+        }
+        bestDebug=makeDebug(variant.html,parsed.debugResources);lastErr=`${variant.via}: дорожки не найдены`;
+      }catch(e){lastErr=`${variant.via}: ${e.message}`;bestDebug=bestDebug||makeDebug(variant.html,[])}
+    }
+    $('#debug').textContent=bestDebug;$('#debug').classList.add('show');
+    throw new Error('Плеер на странице есть, но его список дорожек формируется динамически. Я проверил HTML, iframe, конфиги и скрипты, но не получил воспроизводимый URL. Диагностика ниже поможет добить именно этот API. '+lastErr);
   }catch(e){status(e.message,true)}finally{$('#loadBtn').disabled=false;$('#loadBtn').innerHTML='Открыть книгу <span>→</span>';renderLibrary()}
 }
 function renderBook(){
@@ -350,7 +513,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkSlee
 function onlineUI(){document.documentElement.classList.toggle('offline',!navigator.onLine)}window.addEventListener('online',onlineUI);window.addEventListener('offline',onlineUI);onlineUI();
 const storedSleep=Number(localStorage.getItem('slushayu_sleep')||0);if(storedSleep>Date.now()){sleepDeadline=storedSleep;sleepTimer=setInterval(checkSleep,1000)}else localStorage.removeItem('slushayu_sleep');
 renderLibrary();renderSpeedChoices();urlInput.placeholder=EXAMPLE;resizeViz();drawViz();
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=4').catch(()=>{}));
 })();
 </script>
 </body>
