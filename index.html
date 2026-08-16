@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#090b0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Слушаю" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <title>Слушаю — аудиокниги</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#080a0e;
+      --surface:#11141a;
+      --surface2:#171b23;
+      --surface3:#1d222c;
+      --text:#f5f7f9;
+      --muted:#8d94a1;
+      --faint:#5d6470;
+      --line:rgba(255,255,255,.075);
+      --accent:#c6ff4f;
+      --accent2:#8fff87;
+      --danger:#ff7272;
+      --radius:28px;
+      --shadow:0 28px 90px rgba(0,0,0,.42);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;overscroll-behavior:none}
+    body{min-height:100dvh;background:
+      radial-gradient(1000px 650px at 50% -200px,rgba(198,255,79,.09),transparent 62%),
+      var(--bg)}
+    button,input,textarea{font:inherit}
+    button{border:0;color:inherit;cursor:pointer;background:none}
+    img{display:block}
+    .app{width:min(760px,100%);margin:0 auto;min-height:100dvh;padding:calc(env(safe-area-inset-top) + 8px) 16px calc(env(safe-area-inset-bottom) + 28px)}
+    .topbar{height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:7;background:linear-gradient(180deg,var(--bg) 68%,transparent);margin:0 -4px;padding:0 4px}
+    .brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:850;letter-spacing:.14em}
+    .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px rgba(198,255,79,.5)}
+    .top-actions{display:flex;gap:8px}
+    .icon-btn{width:44px;height:44px;border-radius:15px;background:rgba(17,20,26,.88);border:1px solid var(--line);display:grid;place-items:center;backdrop-filter:blur(16px);font-size:18px}
+    .screen{display:none}.screen.active{display:block;animation:screenIn .28s ease both}
+    @keyframes screenIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+    .hero{padding:34px 4px 12px}
+    .eyebrow{font-size:12px;color:var(--accent);font-weight:850;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+    .hero h1{font-size:clamp(42px,13vw,72px);line-height:.92;letter-spacing:-.065em;margin:0;max-width:690px;font-weight:820}
+    .hero p{margin:20px 0 0;color:var(--muted);font-size:16px;line-height:1.48;max-width:590px}
+
+    .import-card{margin-top:28px;padding:10px;border-radius:26px;background:rgba(17,20,26,.9);border:1px solid var(--line);box-shadow:var(--shadow)}
+    .url-field{width:100%;height:76px;resize:none;border:0;outline:0;background:transparent;color:var(--text);padding:15px 14px 7px;line-height:1.35;font-size:15px}
+    .url-field::placeholder{color:#646b77}
+    .import-actions{display:grid;grid-template-columns:auto 1fr;gap:8px}
+    .btn{height:54px;border-radius:17px;padding:0 18px;font-weight:760;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn.secondary{background:var(--surface2);border:1px solid var(--line)}
+    .btn.primary{background:var(--accent);color:#0b0d0f}
+    .btn:disabled{opacity:.55}
+    .status{min-height:24px;margin:12px 6px 0;color:var(--muted);font-size:12px;line-height:1.45}
+    .status.error{color:#ff9090}
+
+    .section-head{display:flex;align-items:flex-end;justify-content:space-between;margin:34px 3px 13px}
+    .section-head h2{font-size:20px;line-height:1;margin:0;letter-spacing:-.03em}
+    .section-head span{font-size:12px;color:var(--muted)}
+    .library{display:grid;grid-template-columns:1fr;gap:9px}
+    .library-empty{padding:24px;border:1px dashed rgba(255,255,255,.1);border-radius:20px;color:var(--faint);font-size:13px;text-align:center}
+    .book-card{width:100%;display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:13px;align-items:center;text-align:left;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:19px}
+    .book-card-cover{width:56px;height:76px;object-fit:cover;border-radius:11px;background:var(--surface2)}
+    .book-card-title{font-size:14px;font-weight:720;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:7px}
+    .book-card-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+    .mini-progress{height:3px;border-radius:99px;background:#2a2f38;overflow:hidden}.mini-progress i{display:block;height:100%;background:var(--accent);border-radius:inherit}
+    .book-card-play{width:40px;height:40px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:13px}
+
+    .player-page{padding-top:8px}
+    .art-wrap{position:relative;width:min(76vw,320px);margin:12px auto 24px;isolation:isolate}
+    .art-glow{position:absolute;inset:18%;z-index:-2;border-radius:50%;background:var(--art-bg,rgba(198,255,79,.13));filter:blur(54px);opacity:.65;transform:scale(1.25)}
+    .cover{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:30px;background:linear-gradient(145deg,#282d37,#0f1217);box-shadow:0 36px 80px rgba(0,0,0,.48);border:1px solid rgba(255,255,255,.08)}
+    .cover-overlay{position:absolute;inset:0;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 28%,transparent 72%,rgba(0,0,0,.15));pointer-events:none}
+    .now{text-align:center;padding:0 8px}
+    .now-kicker{font-size:11px;color:var(--accent);font-weight:850;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+    .book-title{font-size:28px;line-height:1.02;letter-spacing:-.045em;font-weight:790;margin:0 auto;max-width:580px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+    .chapter-now{margin:8px auto 0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:550px}
+
+    .visualizer-shell{height:76px;margin:18px 0 6px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    #visualizer{width:100%;height:76px;display:block}
+    .visualizer-mode{position:absolute;right:4px;bottom:1px;color:rgba(255,255,255,.28);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+
+    .progress-wrap{padding:0 2px}
+    .progress{width:100%;appearance:none;-webkit-appearance:none;height:5px;border-radius:99px;background:linear-gradient(to right,var(--accent) 0 var(--p,0%),#2a2f38 var(--p,0%) 100%);outline:0;margin:0}
+    .progress::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#f7f8f9;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+    .time-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:8px}
+    .main-controls{display:flex;align-items:center;justify-content:center;gap:27px;margin:17px 0 19px}
+    .skip{width:52px;height:52px;border-radius:50%;font-weight:780;font-size:13px;color:#e3e6e8;position:relative}.skip small{position:absolute;font-size:8px;left:0;right:0;top:9px;color:var(--muted)}
+    .play{width:78px;height:78px;border-radius:50%;background:#f4f6f7;color:#0a0d0f;display:grid;place-items:center;font-size:27px;box-shadow:0 18px 45px rgba(255,255,255,.08);transition:transform .15s ease}.play:active{transform:scale(.95)}
+    .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .tool{height:49px;border-radius:15px;background:var(--surface);border:1px solid var(--line);font-size:12px;font-weight:720;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+    .tool.on{color:var(--accent);border-color:rgba(198,255,79,.26);background:rgba(198,255,79,.06)}
+
+    .chapter-list{display:flex;flex-direction:column;gap:7px;padding-bottom:10px}
+    .chapter{width:100%;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:11px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+    .chapter.active{background:rgba(198,255,79,.055);border-color:rgba(198,255,79,.25)}
+    .chapter-num{width:36px;height:36px;border-radius:11px;background:var(--surface2);display:grid;place-items:center;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+    .chapter-name{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chapter-mark{font-size:9px;color:var(--accent);font-weight:850;letter-spacing:.05em}
+
+    .sheet-wrap{position:fixed;inset:0;z-index:20;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.48);backdrop-filter:blur(8px)}
+    .sheet-wrap.show{display:flex;animation:fade .18s ease both}@keyframes fade{from{opacity:0}to{opacity:1}}
+    .sheet{width:min(760px,100%);max-height:82dvh;overflow:auto;background:#15191f;border:1px solid var(--line);border-radius:30px 30px 0 0;padding:10px 16px calc(env(safe-area-inset-bottom) + 20px);box-shadow:0 -35px 90px rgba(0,0,0,.5);animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
+    @keyframes sheetUp{from{transform:translateY(24px)}to{transform:none}}
+    .grab{width:42px;height:5px;border-radius:99px;background:#424852;margin:2px auto 18px}.sheet h3{margin:0 2px 16px;font-size:22px;letter-spacing:-.035em}
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice{height:52px;border-radius:15px;background:var(--surface2);border:1px solid var(--line);font-weight:720}.choice.active{color:var(--accent);border-color:rgba(198,255,79,.3)}
+    .custom-row{display:flex;gap:8px;margin-top:8px}.custom-row input{min-width:0;flex:1;height:52px;border:1px solid var(--line);background:var(--surface2);border-radius:15px;padding:0 14px;color:var(--text);outline:0}.custom-row .btn{width:120px;flex:none}
+    .sheet-note{font-size:11px;line-height:1.5;color:var(--muted);margin:14px 3px 2px}
+    .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 17px);z-index:40;transform:translate(-50%,18px);max-width:calc(100vw - 32px);padding:11px 14px;background:#f1f3f4;color:#101216;border-radius:14px;font-size:12px;font-weight:760;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+    .debug{display:none;margin-top:14px;padding:12px;background:#0d1015;border:1px solid var(--line);border-radius:14px;color:#8e96a3;font:10px/1.45 ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}.debug.show{display:block}
+    .offline-pill{display:none;font-size:10px;color:#ffd37e;background:rgba(255,211,126,.08);border:1px solid rgba(255,211,126,.18);padding:6px 9px;border-radius:99px}.offline .offline-pill{display:block}
+    @media(max-width:440px){.hero{padding-top:24px}.art-wrap{width:min(73vw,290px)}.book-title{font-size:25px}.tools{gap:6px}.tool{font-size:11px}.visualizer-shell{height:66px}#visualizer{height:66px}}
+    @media(display-mode:standalone){.topbar{padding-top:2px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand"><i class="brand-dot"></i>СЛУШАЮ</div>
+    <div class="top-actions">
+      <span class="offline-pill">ОФЛАЙН</span>
+      <button id="homeBtn" class="icon-btn" aria-label="Главная" style="display:none">⌂</button>
+    </div>
+  </header>
+
+  <main id="homeScreen" class="screen active">
+    <section class="hero">
+      <div class="eyebrow">Личный аудиоплеер</div>
+      <h1>Книга —<br>без лишнего.</h1>
+      <p>Вставь ссылку на knigi-audio.ru. Приложение найдёт аудио, соберёт главы и запомнит, где ты остановился.</p>
+    </section>
+
+    <section class="import-card">
+      <textarea id="urlInput" class="url-field" rows="2" spellcheck="false" autocapitalize="none" autocomplete="off" placeholder="https://knigi-audio.ru/..."></textarea>
+      <div class="import-actions">
+        <button id="pasteBtn" class="btn secondary">Вставить</button>
+        <button id="loadBtn" class="btn primary">Открыть книгу <span>→</span></button>
+      </div>
+    </section>
+    <div id="status" class="status">Позиция сохраняется автоматически на этом iPhone.</div>
+    <pre id="debug" class="debug"></pre>
+
+    <div class="section-head"><h2>Библиотека</h2><span id="libraryCount">0</span></div>
+    <section id="library" class="library"></section>
+  </main>
+
+  <main id="playerScreen" class="screen player-page">
+    <section class="art-wrap">
+      <div class="art-glow"></div>
+      <img id="cover" class="cover" alt="Обложка" />
+      <div class="cover-overlay"></div>
+    </section>
+
+    <section class="now">
+      <div class="now-kicker">Сейчас играет</div>
+      <h1 id="bookTitle" class="book-title">Аудиокнига</h1>
+      <div id="chapterNow" class="chapter-now">Глава 1</div>
+    </section>
+
+    <div class="visualizer-shell">
+      <canvas id="visualizer" aria-hidden="true"></canvas>
+      <div id="visualizerMode" class="visualizer-mode"></div>
+    </div>
+
+    <section class="progress-wrap">
+      <input id="progress" class="progress" type="range" min="0" max="1000" value="0" aria-label="Позиция" />
+      <div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+    </section>
+
+    <div class="main-controls">
+      <button id="back15" class="skip" aria-label="Назад на 15 секунд"><small>↶</small>15</button>
+      <button id="playBtn" class="play" aria-label="Воспроизвести">▶</button>
+      <button id="forward15" class="skip" aria-label="Вперёд на 15 секунд"><small>↷</small>15</button>
+    </div>
+
+    <div class="tools">
+      <button id="speedBtn" class="tool">1×</button>
+      <button id="sleepBtn" class="tool">☾ Сон</button>
+      <button id="sourceBtn" class="tool">Источник ↗</button>
+    </div>
+
+    <div class="section-head"><h2>Главы</h2><span id="chapterCount">0</span></div>
+    <section id="chapters" class="chapter-list"></section>
+  </main>
+</div>
+
+<div id="speedSheet" class="sheet-wrap"><div class="sheet"><div class="grab"></div><h3>Скорость</h3><div id="speedChoices" class="choices"></div></div></div>
+<div id="sleepSheet" class="sheet-wrap"><div class="sheet"><div class="grab"></div><h3>Таймер сна</h3><div class="choices">
+  <button class="choice sleep-choice" data-min="15">15 минут</button><button class="choice sleep-choice" data-min="30">30 минут</button>
+  <button class="choice sleep-choice" data-min="45">45 минут</button><button class="choice sleep-choice" data-min="60">1 час</button>
+  <button class="choice sleep-choice" data-min="90">1,5 часа</button><button class="choice" id="sleepOff">Выключить</button>
+</div><div class="custom-row"><input id="customSleep" type="number" min="1" max="600" inputmode="numeric" placeholder="Своё время, мин"><button id="customSleepBtn" class="btn primary">Поставить</button></div>
+<p class="sheet-note">Таймер хранит абсолютное время окончания. Если iOS приостановит страницу после блокировки экрана, приложение проверит таймер сразу после следующего доступного события.</p></div></div>
+<div id="toast" class="toast"></div>
+<audio id="audio" preload="metadata" playsinline></audio>
+
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const audio=$('#audio');
+const urlInput=$('#urlInput'), loadBtn=$('#loadBtn'), pasteBtn=$('#pasteBtn'), homeBtn=$('#homeBtn');
+const playBtn=$('#playBtn'), back15=$('#back15'), forward15=$('#forward15'), speedBtn=$('#speedBtn'), sleepBtn=$('#sleepBtn'), sourceBtn=$('#sourceBtn');
+const progress=$('#progress'), currentTime=$('#currentTime'), duration=$('#duration'), speedSheet=$('#speedSheet'), sleepSheet=$('#sleepSheet');
+const sleepOff=$('#sleepOff'), customSleep=$('#customSleep'), customSleepBtn=$('#customSleepBtn');
+const STORE='slushayu_pwa_v2';
+const LEGACY='ab_player_v1';
+const EXAMPLE='https://knigi-audio.ru/roman-proza/51636-dvesti-tretij-den-zimy-olga-pticeva.html';
+let state=loadState(), book=null, chapterIndex=0, saveTick=0, sleepDeadline=0, sleepTimer=null, isSeeking=false;
+
+function loadState(){
+  try{
+    let s=JSON.parse(localStorage.getItem(STORE));
+    if(s&&s.books)return s;
+    const old=JSON.parse(localStorage.getItem(LEGACY));
+    if(old&&old.books){localStorage.setItem(STORE,JSON.stringify(old));return old}
+  }catch{}
+  return {books:{},lastUrl:''};
+}
+function saveState(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch{}}
+function cleanKey(url){return (url||'').replace(/#.*$/,'').replace(/\/$/,'')}
+function fmt(sec){sec=Number.isFinite(sec)?Math.max(0,Math.floor(sec)):0;const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),1700)}
+function status(msg,error=false){const e=$('#status');e.textContent=msg;e.classList.toggle('error',error)}
+function normalizeInput(raw){let url=(raw||'').trim();if(!url)throw new Error('Вставь ссылку на книгу.');if(!/^https?:\/\//i.test(url))url='https://'+url;const u=new URL(url);if(!/(^|\.)knigi-audio\.ru$/i.test(u.hostname))throw new Error('Сейчас источник настроен только на knigi-audio.ru.');u.hash='';return cleanKey(u.href)}
+function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;if(n>10&&n<20)return c;if(n1>1&&n1<5)return b;if(n1===1)return a;return c}
+function svgCover(title){const safe=(title||'AUDIOBOOK').slice(0,64).replace(/[&<>"']/g,'');const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><defs><radialGradient id="g"><stop stop-color="#313743"/><stop offset="1" stop-color="#0e1116"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><circle cx="450" cy="130" r="190" fill="#c6ff4f" opacity=".12"/><text x="42" y="470" fill="#fff" font-size="42" font-family="Arial" font-weight="700">СЛУШАЮ</text><text x="42" y="515" fill="#c6ff4f" font-size="17" font-family="Arial">${safe}</text></svg>`;return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}
+
+async function fetchText(url){
+  const attempts=[
+    {name:'напрямую',url},
+    {name:'AllOrigins',url:'https://api.allorigins.win/raw?url='+encodeURIComponent(url)},
+    {name:'CorsProxy',url:'https://corsproxy.io/?url='+encodeURIComponent(url)}
+  ];
+  const errors=[];
+  for(const a of attempts){
+    try{
+      status(`Подключаюсь · ${a.name}…`);
+      const ctl=new AbortController(), timer=setTimeout(()=>ctl.abort(),18000);
+      const r=await fetch(a.url,{cache:'no-store',signal:ctl.signal,headers:{Accept:'text/html,application/xhtml+xml'}});clearTimeout(timer);
+      const txt=await r.text();
+      if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      if(txt.length<500)throw new Error('слишком короткий ответ');
+      if(/captcha|cloudflare|access denied|forbidden/i.test(txt.slice(0,5000)))throw new Error('защитная страница');
+      return {html:txt,via:a.name};
+    }catch(e){errors.push(`${a.name}: ${e.message}`)}
+  }
+  throw new Error('Не удалось получить страницу. '+errors.join(' · '));
+}
+function absUrl(value,pageUrl){if(!value||typeof value!=='string')return null;value=value.trim().replace(/^['"]|['"]$/g,'').replace(/\\\//g,'/').replace(/&amp;/g,'&');try{return new URL(value,pageUrl).href}catch{return null}}
+function isAudioUrl(u){if(!u)return false;const s=u.toLowerCase();return /\.(mp3|m4a|aac|ogg|oga|opus|wav|m3u8)(?:$|[?#])/i.test(s)||(/(?:audio|audiobook|track|chapter|mp3)[_\/-]/i.test(s)&&/^https?:/i.test(s))}
+function cleanName(s,fallback='Глава'){s=(s||'').replace(/\s+/g,' ').replace(/[<>]/g,'').trim();return(!s||s.length>120)?fallback:s}
+function tryDecodeBase64(s){try{if(!/^[A-Za-z0-9+/=_-]{40,}$/.test(s))return null;let x=s.replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';const out=decodeURIComponent([...atob(x)].map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join(''));return /https?:\/\//i.test(out)?out:null}catch{return null}}
+function extractBook(html,pageUrl){
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  const title=cleanName(doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('h1')?.textContent||doc.title||'Аудиокнига','Аудиокнига');
+  let cover=absUrl(doc.querySelector('meta[property="og:image"]')?.content,pageUrl);
+  if(!cover){const imgs=[...doc.images].map(i=>({src:absUrl(i.getAttribute('src')||i.getAttribute('data-src'),pageUrl),area:(i.width||0)*(i.height||0)})).filter(x=>x.src);cover=(imgs.sort((a,b)=>b.area-a.area)[0]||{}).src||''}
+  const found=[],seen=new Map();
+  const push=(url,name,source='dom')=>{url=absUrl(url,pageUrl);if(!url||!isAudioUrl(url))return;const nm=cleanName(name,`Глава ${found.length+1}`);if(seen.has(url)){const i=seen.get(url);if(/^Глава\s+\d+$/i.test(found[i].name)&&!/^Глава\s+\d+$/i.test(nm))found[i].name=nm;return}seen.set(url,found.length);found.push({url,name:nm,source})};
+  doc.querySelectorAll('audio,source,a,[data-src],[data-file],[data-url],[data-audio],[data-mp3]').forEach((el,idx)=>{const vals=['src','href','data-src','data-file','data-url','data-audio','data-mp3'].map(a=>el.getAttribute(a)).filter(Boolean);const label=el.getAttribute('title')||el.getAttribute('data-title')||el.getAttribute('aria-label')||el.textContent||`Глава ${idx+1}`;vals.forEach(v=>push(v,label,'element'))});
+  const raw=html.replace(/\\u002F/gi,'/').replace(/\\x2F/gi,'/').replace(/\\\//g,'/');
+  const urlRe=/(https?:\/\/[^\s"'<>\\]+?\.(?:mp3|m4a|aac|ogg|oga|opus|wav|m3u8)(?:\?[^\s"'<>\\]*)?)/gi;let m;
+  while((m=urlRe.exec(raw)))push(m[1],`Глава ${found.length+1}`,'regex');
+  const pairPatterns=[/(?:title|name|label)\s*[:=]\s*["']([^"']{1,120})["'][\s\S]{0,300}?(?:file|src|url)\s*[:=]\s*["']([^"']+)["']/gi,/(?:file|src|url)\s*[:=]\s*["']([^"']+)["'][\s\S]{0,300}?(?:title|name|label)\s*[:=]\s*["']([^"']{1,120})["']/gi];
+  pairPatterns.forEach((re,ri)=>{let q;while((q=re.exec(raw))){ri===0?push(q[2],q[1],'script-pair'):push(q[1],q[2],'script-pair')}});
+  const playerFile=/\bfile\s*[:=]\s*["']([^"']{20,})["']/gi;while((m=playerFile.exec(raw))){const val=m[1];if(val.includes(',')){val.split(',').forEach(part=>{const mm=part.match(/^\s*\[([^\]]+)\]\s*(.+)$/);push(mm?mm[2]:part,mm?mm[1]:`Глава ${found.length+1}`,'player-file')})}else push(val,`Глава ${found.length+1}`,'player-file')}
+  const strings=raw.match(/[A-Za-z0-9+/_=-]{60,}/g)||[];for(const s of strings.slice(0,300)){const decoded=tryDecodeBase64(s);if(!decoded)continue;let z;urlRe.lastIndex=0;while((z=urlRe.exec(decoded)))push(z[1],`Глава ${found.length+1}`,'base64')}
+  return {url:cleanKey(pageUrl),title,cover,chapters:found};
+}
+
+async function openUrl(raw,restore=true){
+  let url;try{url=normalizeInput(raw)}catch(e){status(e.message,true);return}
+  $('#loadBtn').disabled=true;$('#loadBtn').innerHTML='Загружаю…';
+  try{
+    const {html,via}=await fetchText(url);status('Собираю главы…');const parsed=extractBook(html,url);
+    if(!parsed.chapters.length){$('#debug').textContent=html.slice(0,12000);$('#debug').classList.add('show');throw new Error('Страница получена, но аудиодорожки не найдены. Похоже, сайт отдаёт плейлист отдельным запросом.')}
+    parsed.via=via;book=parsed;state.lastUrl=url;state.books[url]=state.books[url]||{};Object.assign(state.books[url],{title:book.title,cover:book.cover,chapterCount:book.chapters.length,updated:Date.now()});saveState();renderBook();
+    const saved=state.books[url];chapterIndex=restore?Math.min(saved.chapter||0,book.chapters.length-1):0;await loadChapter(chapterIndex,restore?(saved.time||0):0,false);showPlayer();toast(`Найдено ${book.chapters.length} ${plural(book.chapters.length,'глава','главы','глав')}`);
+  }catch(e){status(e.message,true)}finally{$('#loadBtn').disabled=false;$('#loadBtn').innerHTML='Открыть книгу <span>→</span>';renderLibrary()}
+}
+function renderBook(){
+  $('#bookTitle').textContent=book.title;$('#chapterCount').textContent=String(book.chapters.length);$('#cover').src=book.cover||svgCover(book.title);$('#chapters').innerHTML='';
+  book.chapters.forEach((ch,i)=>{const b=document.createElement('button');b.className='chapter';b.dataset.index=i;b.innerHTML=`<span class="chapter-num">${String(i+1).padStart(2,'0')}</span><span class="chapter-name"></span><span class="chapter-mark"></span>`;b.querySelector('.chapter-name').textContent=ch.name||`Глава ${i+1}`;b.onclick=()=>loadChapter(i,0,true);$('#chapters').appendChild(b)});refreshChapterList();
+}
+async function loadChapter(index,time=0,autoplay=false){
+  if(!book)return;saveProgress(true);chapterIndex=Math.max(0,Math.min(index,book.chapters.length-1));const ch=book.chapters[chapterIndex];audio.pause();audio.src=ch.url;audio.load();$('#chapterNow').textContent=ch.name||`Глава ${chapterIndex+1}`;refreshChapterList();updateMediaSession();
+  const setTime=()=>{if(Number.isFinite(audio.duration)&&time>0&&time<audio.duration-1)audio.currentTime=time;audio.removeEventListener('loadedmetadata',setTime);updateProgress()};audio.addEventListener('loadedmetadata',setTime);
+  if(autoplay){try{await audio.play()}catch{toast('Нажми Play для запуска')}}
+}
+function refreshChapterList(){$$('.chapter').forEach((e,i)=>{e.classList.toggle('active',i===chapterIndex);e.querySelector('.chapter-mark').textContent=i===chapterIndex?'СЕЙЧАС':''})}
+function showPlayer(){$('#homeScreen').classList.remove('active');$('#playerScreen').classList.add('active');$('#homeBtn').style.display='grid';window.scrollTo({top:0,behavior:'instant'})}
+function showHome(){saveProgress(true);$('#playerScreen').classList.remove('active');$('#homeScreen').classList.add('active');$('#homeBtn').style.display='none';renderLibrary();window.scrollTo({top:0,behavior:'instant'})}
+function saveProgress(force=false){if(!book)return;const now=Date.now();if(!force&&now-saveTick<2500)return;saveTick=now;const url=cleanKey(book.url),rec=state.books[url]||{};Object.assign(rec,{title:book.title,cover:book.cover,chapter:chapterIndex,time:audio.currentTime||0,duration:audio.duration||rec.duration||0,speed:audio.playbackRate||1,updated:now,chapterCount:book.chapters.length});state.books[url]=rec;state.lastUrl=url;saveState()}
+function renderLibrary(){
+  const entries=Object.entries(state.books||{}).sort((a,b)=>(b[1].updated||0)-(a[1].updated||0));$('#libraryCount').textContent=entries.length?`${entries.length} ${plural(entries.length,'книга','книги','книг')}`:'0';const box=$('#library');box.innerHTML='';
+  if(!entries.length){box.innerHTML='<div class="library-empty">Здесь появятся книги, которые ты откроешь.</div>';return}
+  entries.forEach(([url,rec])=>{const p=rec.duration?Math.max(0,Math.min(100,(rec.time||0)/rec.duration*100)):0;const b=document.createElement('button');b.className='book-card';b.innerHTML='<img class="book-card-cover"><div><div class="book-card-title"></div><div class="book-card-meta"></div><div class="mini-progress"><i></i></div></div><span class="book-card-play">▶</span>';b.querySelector('img').src=rec.cover||svgCover(rec.title||'AUDIOBOOK');b.querySelector('.book-card-title').textContent=rec.title||'Аудиокнига';b.querySelector('.book-card-meta').textContent=`Глава ${(rec.chapter||0)+1} · ${fmt(rec.time||0)}`;b.querySelector('.mini-progress i').style.width=p+'%';b.onclick=()=>{urlInput.value=url;openUrl(url,true)};box.appendChild(b)});
+}
+function updateProgress(){const d=audio.duration||0,c=audio.currentTime||0,p=d?c/d:0;if(!isSeeking){progress.value=Math.round(p*1000);progress.style.setProperty('--p',`${p*100}%`)}currentTime.textContent=fmt(c);duration.textContent=fmt(d);updateSleepLabel()}
+function togglePlay(){audio.paused?audio.play().catch(()=>toast('Нажми Play ещё раз')):audio.pause()}
+function seekBy(delta){if(Number.isFinite(audio.duration))audio.currentTime=Math.max(0,Math.min(audio.duration,audio.currentTime+delta))}
+function setSpeed(v){audio.playbackRate=v;audio.defaultPlaybackRate=v;speedBtn.textContent=`${v}×`;renderSpeedChoices();saveProgress(true)}
+function renderSpeedChoices(){const vals=[.8,1,1.1,1.2,1.35,1.5,1.75,2],box=$('#speedChoices');box.innerHTML='';vals.forEach(v=>{const b=document.createElement('button');b.className='choice'+(Math.abs(v-audio.playbackRate)<.01?' active':'');b.textContent=`${v}×`;b.onclick=()=>{setSpeed(v);closeSheets()};box.appendChild(b)})}
+function updateMediaSession(){if(!('mediaSession'in navigator)||!book)return;try{navigator.mediaSession.metadata=new MediaMetadata({title:book.chapters[chapterIndex]?.name||book.title,artist:book.title,album:'Слушаю',artwork:book.cover?[{src:book.cover}]:[]});navigator.mediaSession.setActionHandler('play',()=>audio.play());navigator.mediaSession.setActionHandler('pause',()=>audio.pause());navigator.mediaSession.setActionHandler('seekbackward',d=>seekBy(-(d.seekOffset||15)));navigator.mediaSession.setActionHandler('seekforward',d=>seekBy(d.seekOffset||15));navigator.mediaSession.setActionHandler('previoustrack',()=>chapterIndex>0&&loadChapter(chapterIndex-1,0,true));navigator.mediaSession.setActionHandler('nexttrack',()=>chapterIndex<book.chapters.length-1&&loadChapter(chapterIndex+1,0,true))}catch{}}
+
+function setSleep(minutes){sleepDeadline=Date.now()+minutes*60000;localStorage.setItem('slushayu_sleep',String(sleepDeadline));clearInterval(sleepTimer);sleepTimer=setInterval(checkSleep,1000);updateSleepLabel();closeSheets();toast(`Сон через ${minutes} мин`)}
+function clearSleep(silent=false){sleepDeadline=0;localStorage.removeItem('slushayu_sleep');clearInterval(sleepTimer);sleepTimer=null;updateSleepLabel();closeSheets();if(!silent)toast('Таймер выключен')}
+function checkSleep(){if(!sleepDeadline)return;const left=sleepDeadline-Date.now();if(left<=0){audio.pause();clearSleep(true);toast('Таймер сна сработал')}else updateSleepLabel()}
+function updateSleepLabel(){if(!sleepDeadline){sleepBtn.textContent='☾ Сон';sleepBtn.classList.remove('on');return}const min=Math.ceil(Math.max(0,sleepDeadline-Date.now())/60000);sleepBtn.textContent=`☾ ${min} мин`;sleepBtn.classList.add('on')}
+function closeSheets(){$$('.sheet-wrap').forEach(s=>s.classList.remove('show'))}
+
+/* Equalizer: true analyser for same-origin audio; safe playback-linked animation for remote media. */
+const canvas=$('#visualizer'),ctx=canvas.getContext('2d');let raf=0,phase=0,audioCtx=null,analyser=null,sourceNode=null,realAnalyser=false;
+function resizeViz(){const dpr=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(r.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0)}
+function canUseRealAnalyser(){try{return new URL(audio.currentSrc||audio.src,location.href).origin===location.origin}catch{return false}}
+function setupAnalyser(){if(sourceNode||!canUseRealAnalyser())return;try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();analyser=audioCtx.createAnalyser();analyser.fftSize=128;analyser.smoothingTimeConstant=.82;sourceNode=audioCtx.createMediaElementSource(audio);sourceNode.connect(analyser);analyser.connect(audioCtx.destination);realAnalyser=true;$('#visualizerMode').textContent='SPECTRUM'}catch{realAnalyser=false}}
+function drawViz(){
+  cancelAnimationFrame(raf);const r=canvas.getBoundingClientRect(),w=r.width,h=r.height;ctx.clearRect(0,0,w,h);const bars=34,gap=4,bw=Math.max(2,(w-gap*(bars-1))/bars),mid=h/2;let data=null;
+  if(realAnalyser&&analyser){data=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(data)}
+  phase+=audio.paused?.008:.055;
+  for(let i=0;i<bars;i++){
+    const x=i*(bw+gap);let a;
+    if(data){const idx=Math.min(data.length-1,Math.floor(i/data.length*data.length));a=data[idx]/255}
+    else{
+      const envelope=.28+.72*Math.sin(Math.PI*(i+1)/(bars+1));
+      const pulse=(Math.sin(phase*1.5+i*.57)+Math.sin(phase*.84+i*.31)+2)/4;
+      a=audio.paused?.055:(.16+.72*pulse)*envelope;
+    }
+    const bh=Math.max(4,a*(h*.78));const y=mid-bh/2;const alpha=audio.paused?.22:(.52+.48*a);
+    ctx.fillStyle=`rgba(198,255,79,${alpha})`;ctx.beginPath();const rr=Math.min(bw/2,3);ctx.roundRect(x,y,bw,bh,rr);ctx.fill();
+  }
+  raf=requestAnimationFrame(drawViz);
+}
+
+loadBtn.onclick=()=>openUrl(urlInput.value,true);urlInput.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')openUrl(urlInput.value,true)});
+pasteBtn.onclick=async()=>{try{urlInput.value=await navigator.clipboard.readText();toast('Вставлено')}catch{urlInput.focus();toast('Зажми поле → «Вставить»')}};
+homeBtn.onclick=showHome;playBtn.onclick=togglePlay;back15.onclick=()=>seekBy(-15);forward15.onclick=()=>seekBy(15);speedBtn.onclick=()=>{renderSpeedChoices();speedSheet.classList.add('show')};sleepBtn.onclick=()=>sleepSheet.classList.add('show');sourceBtn.onclick=()=>book&&window.open(book.url,'_blank','noopener');
+$$('.sheet-wrap').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)closeSheets()}));$$('.sleep-choice').forEach(b=>b.onclick=()=>setSleep(Number(b.dataset.min)));sleepOff.onclick=()=>clearSleep();customSleepBtn.onclick=()=>{const n=Number(customSleep.value);n>=1&&n<=600?setSleep(n):toast('От 1 до 600 минут')};
+progress.addEventListener('input',e=>{isSeeking=true;const p=Number(e.target.value)/1000;e.target.style.setProperty('--p',`${p*100}%`);currentTime.textContent=fmt((audio.duration||0)*p)});progress.addEventListener('change',e=>{if(Number.isFinite(audio.duration))audio.currentTime=audio.duration*(Number(e.target.value)/1000);isSeeking=false;saveProgress(true)});
+audio.addEventListener('timeupdate',()=>{updateProgress();saveProgress();checkSleep()});audio.addEventListener('durationchange',updateProgress);audio.addEventListener('play',async()=>{playBtn.textContent='❚❚';setupAnalyser();if(audioCtx?.state==='suspended')try{await audioCtx.resume()}catch{};updateMediaSession()});audio.addEventListener('pause',()=>{playBtn.textContent='▶';saveProgress(true)});audio.addEventListener('ratechange',()=>speedBtn.textContent=`${audio.playbackRate}×`);audio.addEventListener('ended',()=>{saveProgress(true);if(book&&chapterIndex<book.chapters.length-1)loadChapter(chapterIndex+1,0,true)});audio.addEventListener('error',()=>{if(audio.src)toast('Не удалось воспроизвести эту дорожку')});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkSleep();updateProgress()}else saveProgress(true)});window.addEventListener('pagehide',()=>saveProgress(true));window.addEventListener('resize',resizeViz);
+function onlineUI(){document.documentElement.classList.toggle('offline',!navigator.onLine)}window.addEventListener('online',onlineUI);window.addEventListener('offline',onlineUI);onlineUI();
+const storedSleep=Number(localStorage.getItem('slushayu_sleep')||0);if(storedSleep>Date.now()){sleepDeadline=storedSleep;sleepTimer=setInterval(checkSleep,1000)}else localStorage.removeItem('slushayu_sleep');
+renderLibrary();renderSpeedChoices();urlInput.placeholder=EXAMPLE;resizeViz();drawViz();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+})();
+</script>
+</body>
+</html>
