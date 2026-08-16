@@ -1,519 +1,741 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#090b0f" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1720" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Слушаю" />
+  <meta name="apple-mobile-web-app-title" content="Слушаю 98" />
   <meta name="mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <title>Слушаю — аудиокниги v3</title>
+  <title>Слушаю 98 — Яндекс Диск</title>
   <style>
     :root{
-      color-scheme:dark;
-      --bg:#080a0e;
-      --surface:#11141a;
-      --surface2:#171b23;
-      --surface3:#1d222c;
-      --text:#f5f7f9;
-      --muted:#8d94a1;
-      --faint:#5d6470;
-      --line:rgba(255,255,255,.075);
-      --accent:#c6ff4f;
-      --accent2:#8fff87;
-      --danger:#ff7272;
-      --radius:28px;
-      --shadow:0 28px 90px rgba(0,0,0,.42);
+      --font: Tahoma, Verdana, Geneva, sans-serif;
+      --safe-top: calc(env(safe-area-inset-top) + 10px);
+      --safe-bottom: calc(env(safe-area-inset-bottom) + 14px);
     }
+
+    html[data-theme="light"]{
+      --desktop-a:#0f8e8e;
+      --desktop-b:#006b6b;
+      --window:#c0c0c0;
+      --face:#d4d0c8;
+      --panel:#ece9d8;
+      --panel2:#f4f2eb;
+      --text:#000;
+      --muted:#3f3f3f;
+      --title-start:#000080;
+      --title-end:#1084d0;
+      --title-inactive-start:#707070;
+      --title-inactive-end:#9f9f9f;
+      --line-hi:#ffffff;
+      --line-mid:#dfdfdf;
+      --line-low:#808080;
+      --line-dark:#404040;
+      --accent:#000080;
+      --accent-soft:#dfe6ff;
+      --desktop-text:#fff;
+      --eq-bg:#050505;
+      --eq-grid:#0e3f26;
+      --eq-off:#0d311c;
+      --eq-on-1:#1be45b;
+      --eq-on-2:#b8ff53;
+      --eq-on-3:#ffe56c;
+      --shadow:rgba(0,0,0,.22);
+      --toast-bg:#ece9d8;
+    }
+
+    html[data-theme="dark"]{
+      --desktop-a:#18212d;
+      --desktop-b:#0c1117;
+      --window:#3a434d;
+      --face:#4d5864;
+      --panel:#242a31;
+      --panel2:#2b343d;
+      --text:#f2f5f8;
+      --muted:#c1c8d0;
+      --title-start:#0a2d5f;
+      --title-end:#1880d6;
+      --title-inactive-start:#50565e;
+      --title-inactive-end:#707883;
+      --line-hi:#778391;
+      --line-mid:#56606d;
+      --line-low:#161c23;
+      --line-dark:#05070a;
+      --accent:#81b6ff;
+      --accent-soft:#14284d;
+      --desktop-text:#eef4fa;
+      --eq-bg:#030607;
+      --eq-grid:#163621;
+      --eq-off:#10271a;
+      --eq-on-1:#33dd7b;
+      --eq-on-2:#8df560;
+      --eq-on-3:#fff274;
+      --shadow:rgba(0,0,0,.45);
+      --toast-bg:#4d5864;
+    }
+
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;overscroll-behavior:none}
-    body{min-height:100dvh;background:
-      radial-gradient(1000px 650px at 50% -200px,rgba(198,255,79,.09),transparent 62%),
-      var(--bg)}
-    button,input,textarea{font:inherit}
-    button{border:0;color:inherit;cursor:pointer;background:none}
-    img{display:block}
-    .app{width:min(760px,100%);margin:0 auto;min-height:100dvh;padding:calc(env(safe-area-inset-top) + 8px) 16px calc(env(safe-area-inset-bottom) + 28px)}
-    .topbar{height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:7;background:linear-gradient(180deg,var(--bg) 68%,transparent);margin:0 -4px;padding:0 4px}
-    .brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:850;letter-spacing:.14em}
-    .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px rgba(198,255,79,.5)}
-    .top-actions{display:flex;gap:8px}
-    .icon-btn{width:44px;height:44px;border-radius:15px;background:rgba(17,20,26,.88);border:1px solid var(--line);display:grid;place-items:center;backdrop-filter:blur(16px);font-size:18px}
-    .screen{display:none}.screen.active{display:block;animation:screenIn .28s ease both}
-    @keyframes screenIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+    html,body{margin:0;min-height:100%;font-family:var(--font);background:linear-gradient(180deg,var(--desktop-a),var(--desktop-b));color:var(--text)}
+    body{padding:var(--safe-top) 10px var(--safe-bottom);background-attachment:fixed}
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;
+      background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.55) 1px, transparent 1.5px);
+      background-size:4px 4px;
+      mix-blend-mode:soft-light;
+    }
+    button,input,select{font:inherit;color:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .app{max-width:880px;margin:0 auto;display:grid;gap:10px}
+    .window{background:var(--window);border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark);box-shadow:4px 4px 0 var(--shadow)}
+    .titlebar{height:32px;background:linear-gradient(90deg,var(--title-start),var(--title-end));display:flex;align-items:center;justify-content:space-between;padding:0 4px 0 8px;color:#fff;font-size:14px;font-weight:700;letter-spacing:.01em}
+    .titlebar.inactive{background:linear-gradient(90deg,var(--title-inactive-start),var(--title-inactive-end))}
+    .title-left{display:flex;align-items:center;gap:7px;min-width:0}
+    .title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .win-icon{width:16px;height:16px;background:#fff;color:#000;border:1px solid #000;display:grid;place-items:center;font-size:10px;line-height:1}
+    .title-actions{display:flex;gap:2px}
+    .tb-btn,.btn,.tool-btn,.select,.theme-chip{background:var(--face);border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark)}
+    .tb-btn{width:28px;height:22px;padding:0;display:grid;place-items:center;font-weight:700}
+    .tb-btn:active,.btn:active,.tool-btn:active,.theme-chip:active{border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi)}
+    .body{padding:10px}
+    .stack{display:grid;gap:10px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    fieldset.group{margin:0;min-width:0;padding:10px 10px 12px;border-top:2px solid var(--line-low);border-left:2px solid var(--line-low);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);background:var(--panel)}
+    fieldset.group legend{padding:0 6px;font-size:12px;color:var(--muted)}
+    .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
+    .hero-title{font-size:26px;line-height:1;letter-spacing:-.03em;font-weight:700;margin:0 0 6px}
+    .hero-text{font-size:13px;line-height:1.45;color:var(--muted);max-width:520px}
+    .theme-box{display:grid;gap:8px;justify-items:end}
+    .theme-label{font-size:11px;color:var(--muted)}
+    .theme-row{display:flex;gap:6px}
+    .theme-chip{min-height:34px;padding:0 10px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+    .theme-chip.active{outline:1px dotted var(--accent);outline-offset:-6px;background:var(--accent-soft)}
+    .theme-dot{width:10px;height:10px;border:1px solid var(--line-dark);background:#fff}
+    .theme-dot.dark{background:#0e1620}
+    .input-wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+    .input{width:100%;min-height:46px;padding:10px 12px;background:#fff;color:#000;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);outline:none;border-radius:0;font-size:16px}
+    html[data-theme="dark"] .input{background:#e9edf2;color:#000}
+    .btn{min-height:42px;padding:0 14px;font-size:15px}
+    .btn.primary{font-weight:700}
+    .status{min-height:18px;font-size:12px;line-height:1.4;color:var(--muted);padding:2px 1px}
+    .status.error{color:#9d0d0d;font-weight:700}
+    html[data-theme="dark"] .status.error{color:#ff8686}
+    .info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .info-card{padding:8px;background:var(--panel2);border-top:1px solid var(--line-hi);border-left:1px solid var(--line-hi);border-right:1px solid var(--line-low);border-bottom:1px solid var(--line-low)}
+    .info-head{font-size:11px;color:var(--muted);margin-bottom:4px}
+    .info-text{font-size:12px;line-height:1.35}
+    .library-list,.playlist{background:#fff;color:#000;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);padding:4px;max-height:270px;overflow:auto}
+    html[data-theme="dark"] .library-list,html[data-theme="dark"] .playlist{background:#dfe5ec}
+    .library-empty,.playlist-empty{padding:12px 10px;color:#555;font-size:12px}
+    .library-item,.track{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;background:transparent;border:1px solid transparent;text-align:left}
+    .library-item+.library-item,.track+.track{border-top:1px dotted #a8a8a8}
+    .library-item.active,.track.active{background:#000080;color:#fff}
+    .book-meta,.track-meta{font-size:11px;color:#575757;margin-top:2px}
+    .library-item.active .book-meta,.track.active .track-meta{color:#d6d6ff}
+    .statusbar{display:flex;gap:4px;flex-wrap:wrap}
+    .status-seg{flex:1;min-width:140px;min-height:26px;display:flex;align-items:center;padding:0 6px;background:var(--face);border-top:1px solid var(--line-low);border-left:1px solid var(--line-low);border-right:1px solid var(--line-hi);border-bottom:1px solid var(--line-hi);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .player-grid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:10px}
+    .cover-panel{display:grid;gap:10px}
+    .cover-art{aspect-ratio:1/1;background:linear-gradient(180deg,#fff7c4,#fff);display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;line-height:1.15;font-size:20px;font-weight:700;word-break:break-word;border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark);position:relative;overflow:hidden}
+    .cover-art::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 0 50%, rgba(255,255,255,.18) 50% 51%, transparent 51% 100%);background-size:100% 4px;opacity:.45;mix-blend-mode:overlay}
+    .cover-caption{font-size:12px;color:var(--muted);line-height:1.45}
+    .subtle{font-size:12px;line-height:1.4;color:var(--muted)}
+    .book-title{margin:0 0 6px;font-size:22px;line-height:1.05;letter-spacing:-.03em}
+    .player-main{display:grid;gap:10px}
+    .chapter-name{font-size:18px;font-weight:700;line-height:1.18;min-height:42px}
+    .progress-wrap{display:grid;gap:6px}
+    .progress{appearance:none;-webkit-appearance:none;width:100%;height:22px;background:var(--face);padding:3px;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi)}
+    .progress::-webkit-slider-runnable-track{height:10px;background:linear-gradient(to right,var(--accent) 0 var(--p,0%), #bdbdbd var(--p,0%) 100%);border-top:1px solid var(--line-low);border-left:1px solid var(--line-low);border-right:1px solid var(--line-hi);border-bottom:1px solid var(--line-hi)}
+    .progress::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:24px;margin-top:-7px;background:var(--face);border-top:2px solid var(--line-hi);border-left:2px solid var(--line-hi);border-right:2px solid var(--line-dark);border-bottom:2px solid var(--line-dark)}
+    .time-line{display:flex;justify-content:space-between;font-size:12px}
+    .dock{display:grid;gap:8px}
+    .controls{display:flex;gap:6px;flex-wrap:wrap}
+    .tool-btn,.select{min-height:40px;padding:0 12px;font-size:14px}
+    .tool-btn.big{min-width:92px;font-weight:700}
+    .select{padding-right:24px;background-image:linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);background-position:calc(100% - 14px) 16px, calc(100% - 9px) 16px;background-size:5px 5px, 5px 5px;background-repeat:no-repeat;appearance:none;-webkit-appearance:none}
+    .eq-shell{background:var(--eq-bg);padding:8px;border-top:2px solid var(--line-dark);border-left:2px solid var(--line-dark);border-right:2px solid var(--line-hi);border-bottom:2px solid var(--line-hi);position:relative;overflow:hidden;min-height:146px}
+    .eq-shell::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg, rgba(255,255,255,.08) 0 1px, transparent 1px 4px);opacity:.15;pointer-events:none}
+    .eq-shell::after{content:"";position:absolute;left:0;right:0;top:-35%;height:45%;background:linear-gradient(180deg, rgba(255,255,255,.14), transparent);animation:scan 6s linear infinite;pointer-events:none;mix-blend-mode:screen}
+    @keyframes scan{to{transform:translateY(300%)}}
+    #viz{display:block;width:100%;height:128px}
+    .eq-labels{position:absolute;left:8px;right:8px;bottom:7px;display:flex;justify-content:space-between;font-size:10px;color:var(--eq-on-2);letter-spacing:.08em}
+    .led-strip{display:flex;gap:6px;align-items:center;font-size:10px;color:var(--desktop-text)}
+    .led{width:8px;height:8px;border-radius:50%;background:#5d5d5d;border:1px solid #000;box-shadow:0 0 0 1px rgba(255,255,255,.15) inset}
+    .led.on{background:#1aff72;box-shadow:0 0 9px rgba(26,255,114,.75)}
+    .mini-marquee{overflow:hidden;white-space:nowrap;position:relative;background:var(--panel2);padding:4px 6px;border-top:1px solid var(--line-hi);border-left:1px solid var(--line-hi);border-right:1px solid var(--line-low);border-bottom:1px solid var(--line-low);font-size:11px}
+    .mini-marquee span{display:inline-block;padding-left:100%;animation:marquee 12s linear infinite}
+    @keyframes marquee{to{transform:translateX(-100%)}}
+    .dialog-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.28);z-index:60}
+    .dialog-backdrop.show{display:flex}
+    .dialog{width:min(380px,100%)}
+    .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 12px);transform:translateX(-50%);z-index:70;min-width:220px;max-width:min(92vw,520px)}
+    .toast .body{padding:8px 12px;font-size:13px;font-weight:700;background:var(--toast-bg)}
 
-    .hero{padding:34px 4px 12px}
-    .eyebrow{font-size:12px;color:var(--accent);font-weight:850;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
-    .hero h1{font-size:clamp(42px,13vw,72px);line-height:.92;letter-spacing:-.065em;margin:0;max-width:690px;font-weight:820}
-    .hero p{margin:20px 0 0;color:var(--muted);font-size:16px;line-height:1.48;max-width:590px}
-
-    .import-card{margin-top:28px;padding:10px;border-radius:26px;background:rgba(17,20,26,.9);border:1px solid var(--line);box-shadow:var(--shadow)}
-    .url-field{width:100%;height:76px;resize:none;border:0;outline:0;background:transparent;color:var(--text);padding:15px 14px 7px;line-height:1.35;font-size:15px}
-    .url-field::placeholder{color:#646b77}
-    .import-actions{display:grid;grid-template-columns:auto 1fr;gap:8px}
-    .btn{height:54px;border-radius:17px;padding:0 18px;font-weight:760;display:flex;align-items:center;justify-content:center;gap:8px}
-    .btn.secondary{background:var(--surface2);border:1px solid var(--line)}
-    .btn.primary{background:var(--accent);color:#0b0d0f}
-    .btn:disabled{opacity:.55}
-    .status{min-height:24px;margin:12px 6px 0;color:var(--muted);font-size:12px;line-height:1.45}
-    .status.error{color:#ff9090}
-
-    .section-head{display:flex;align-items:flex-end;justify-content:space-between;margin:34px 3px 13px}
-    .section-head h2{font-size:20px;line-height:1;margin:0;letter-spacing:-.03em}
-    .section-head span{font-size:12px;color:var(--muted)}
-    .library{display:grid;grid-template-columns:1fr;gap:9px}
-    .library-empty{padding:24px;border:1px dashed rgba(255,255,255,.1);border-radius:20px;color:var(--faint);font-size:13px;text-align:center}
-    .book-card{width:100%;display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:13px;align-items:center;text-align:left;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:19px}
-    .book-card-cover{width:56px;height:76px;object-fit:cover;border-radius:11px;background:var(--surface2)}
-    .book-card-title{font-size:14px;font-weight:720;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:7px}
-    .book-card-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
-    .mini-progress{height:3px;border-radius:99px;background:#2a2f38;overflow:hidden}.mini-progress i{display:block;height:100%;background:var(--accent);border-radius:inherit}
-    .book-card-play{width:40px;height:40px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:13px}
-
-    .player-page{padding-top:8px}
-    .art-wrap{position:relative;width:min(76vw,320px);margin:12px auto 24px;isolation:isolate}
-    .art-glow{position:absolute;inset:18%;z-index:-2;border-radius:50%;background:var(--art-bg,rgba(198,255,79,.13));filter:blur(54px);opacity:.65;transform:scale(1.25)}
-    .cover{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:30px;background:linear-gradient(145deg,#282d37,#0f1217);box-shadow:0 36px 80px rgba(0,0,0,.48);border:1px solid rgba(255,255,255,.08)}
-    .cover-overlay{position:absolute;inset:0;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 28%,transparent 72%,rgba(0,0,0,.15));pointer-events:none}
-    .now{text-align:center;padding:0 8px}
-    .now-kicker{font-size:11px;color:var(--accent);font-weight:850;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-    .book-title{font-size:28px;line-height:1.02;letter-spacing:-.045em;font-weight:790;margin:0 auto;max-width:580px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-    .chapter-now{margin:8px auto 0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:550px}
-
-    .visualizer-shell{height:76px;margin:18px 0 6px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
-    #visualizer{width:100%;height:76px;display:block}
-    .visualizer-mode{position:absolute;right:4px;bottom:1px;color:rgba(255,255,255,.28);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-
-    .progress-wrap{padding:0 2px}
-    .progress{width:100%;appearance:none;-webkit-appearance:none;height:5px;border-radius:99px;background:linear-gradient(to right,var(--accent) 0 var(--p,0%),#2a2f38 var(--p,0%) 100%);outline:0;margin:0}
-    .progress::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#f7f8f9;box-shadow:0 2px 10px rgba(0,0,0,.4)}
-    .time-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:8px}
-    .main-controls{display:flex;align-items:center;justify-content:center;gap:27px;margin:17px 0 19px}
-    .skip{width:52px;height:52px;border-radius:50%;font-weight:780;font-size:13px;color:#e3e6e8;position:relative}.skip small{position:absolute;font-size:8px;left:0;right:0;top:9px;color:var(--muted)}
-    .play{width:78px;height:78px;border-radius:50%;background:#f4f6f7;color:#0a0d0f;display:grid;place-items:center;font-size:27px;box-shadow:0 18px 45px rgba(255,255,255,.08);transition:transform .15s ease}.play:active{transform:scale(.95)}
-    .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-    .tool{height:49px;border-radius:15px;background:var(--surface);border:1px solid var(--line);font-size:12px;font-weight:720;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px}
-    .tool.on{color:var(--accent);border-color:rgba(198,255,79,.26);background:rgba(198,255,79,.06)}
-
-    .chapter-list{display:flex;flex-direction:column;gap:7px;padding-bottom:10px}
-    .chapter{width:100%;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;padding:11px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
-    .chapter.active{background:rgba(198,255,79,.055);border-color:rgba(198,255,79,.25)}
-    .chapter-num{width:36px;height:36px;border-radius:11px;background:var(--surface2);display:grid;place-items:center;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
-    .chapter-name{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chapter-mark{font-size:9px;color:var(--accent);font-weight:850;letter-spacing:.05em}
-
-    .sheet-wrap{position:fixed;inset:0;z-index:20;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.48);backdrop-filter:blur(8px)}
-    .sheet-wrap.show{display:flex;animation:fade .18s ease both}@keyframes fade{from{opacity:0}to{opacity:1}}
-    .sheet{width:min(760px,100%);max-height:82dvh;overflow:auto;background:#15191f;border:1px solid var(--line);border-radius:30px 30px 0 0;padding:10px 16px calc(env(safe-area-inset-bottom) + 20px);box-shadow:0 -35px 90px rgba(0,0,0,.5);animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
-    @keyframes sheetUp{from{transform:translateY(24px)}to{transform:none}}
-    .grab{width:42px;height:5px;border-radius:99px;background:#424852;margin:2px auto 18px}.sheet h3{margin:0 2px 16px;font-size:22px;letter-spacing:-.035em}
-    .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice{height:52px;border-radius:15px;background:var(--surface2);border:1px solid var(--line);font-weight:720}.choice.active{color:var(--accent);border-color:rgba(198,255,79,.3)}
-    .custom-row{display:flex;gap:8px;margin-top:8px}.custom-row input{min-width:0;flex:1;height:52px;border:1px solid var(--line);background:var(--surface2);border-radius:15px;padding:0 14px;color:var(--text);outline:0}.custom-row .btn{width:120px;flex:none}
-    .sheet-note{font-size:11px;line-height:1.5;color:var(--muted);margin:14px 3px 2px}
-    .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 17px);z-index:40;transform:translate(-50%,18px);max-width:calc(100vw - 32px);padding:11px 14px;background:#f1f3f4;color:#101216;border-radius:14px;font-size:12px;font-weight:760;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
-    .debug{display:none;margin-top:14px;padding:12px;background:#0d1015;border:1px solid var(--line);border-radius:14px;color:#8e96a3;font:10px/1.45 ui-monospace,monospace;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}.debug.show{display:block}
-    .offline-pill{display:none;font-size:10px;color:#ffd37e;background:rgba(255,211,126,.08);border:1px solid rgba(255,211,126,.18);padding:6px 9px;border-radius:99px}.offline .offline-pill{display:block}
-    @media(max-width:440px){.hero{padding-top:24px}.art-wrap{width:min(73vw,290px)}.book-title{font-size:25px}.tools{gap:6px}.tool{font-size:11px}.visualizer-shell{height:66px}#visualizer{height:66px}}
-    @media(display-mode:standalone){.topbar{padding-top:2px}}
-    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    @media (max-width:760px){
+      body{padding-left:8px;padding-right:8px}
+      .hero{grid-template-columns:1fr}
+      .theme-box{justify-items:start}
+      .hero-title{font-size:22px}
+      .info-grid{grid-template-columns:1fr}
+      .player-grid{grid-template-columns:1fr}
+      .cover-panel{grid-template-columns:88px 1fr;align-items:start}
+      .cover-art{font-size:14px;padding:8px;aspect-ratio:1/1}
+      .book-title{font-size:18px}
+      .chapter-name{font-size:16px;min-height:0}
+      .dock.sticky-mobile{position:sticky;bottom:8px;z-index:4}
+      .controls.compact-mobile .tool-btn,.controls.compact-mobile .select{flex:1 1 calc(50% - 4px);min-width:0}
+      .controls.compact-mobile .tool-btn.big{flex:1 1 calc(33.333% - 4px)}
+      .status-seg{min-width:0;flex:1 1 calc(50% - 2px)}
+    }
   </style>
 </head>
 <body>
-<div class="app" id="app">
-  <header class="topbar">
-    <div class="brand"><i class="brand-dot"></i>СЛУШАЮ</div>
-    <div class="top-actions">
-      <span class="offline-pill">ОФЛАЙН</span>
-      <button id="homeBtn" class="icon-btn" aria-label="Главная" style="display:none">⌂</button>
-    </div>
-  </header>
-
-  <main id="homeScreen" class="screen active">
-    <section class="hero">
-      <div class="eyebrow">Личный аудиоплеер</div>
-      <h1>Книга —<br>без лишнего.</h1>
-      <p>Вставь ссылку на knigi-audio.ru. Приложение найдёт аудио, соберёт главы и запомнит, где ты остановился.</p>
-    </section>
-
-    <section class="import-card">
-      <textarea id="urlInput" class="url-field" rows="2" spellcheck="false" autocapitalize="none" autocomplete="off" placeholder="https://knigi-audio.ru/..."></textarea>
-      <div class="import-actions">
-        <button id="pasteBtn" class="btn secondary">Вставить</button>
-        <button id="loadBtn" class="btn primary">Открыть книгу <span>→</span></button>
+<div class="app">
+  <section id="homeScreen" class="window">
+    <div class="titlebar">
+      <div class="title-left">
+        <div class="win-icon">♪</div>
+        <div class="title-text">Слушаю 98 — Яндекс Диск</div>
       </div>
-    </section>
-    <div id="status" class="status">Позиция сохраняется автоматически на этом iPhone.</div>
-    <pre id="debug" class="debug"></pre>
-
-    <div class="section-head"><h2>Библиотека</h2><span id="libraryCount">0</span></div>
-    <section id="library" class="library"></section>
-  </main>
-
-  <main id="playerScreen" class="screen player-page">
-    <section class="art-wrap">
-      <div class="art-glow"></div>
-      <img id="cover" class="cover" alt="Обложка" />
-      <div class="cover-overlay"></div>
-    </section>
-
-    <section class="now">
-      <div class="now-kicker">Сейчас играет</div>
-      <h1 id="bookTitle" class="book-title">Аудиокнига</h1>
-      <div id="chapterNow" class="chapter-now">Глава 1</div>
-    </section>
-
-    <div class="visualizer-shell">
-      <canvas id="visualizer" aria-hidden="true"></canvas>
-      <div id="visualizerMode" class="visualizer-mode"></div>
+      <div class="title-actions">
+        <button class="tb-btn" type="button" aria-label="Свернуть">_</button>
+        <button class="tb-btn" type="button" aria-label="Закрыть">×</button>
+      </div>
     </div>
+    <div class="body stack">
+      <fieldset class="group">
+        <legend>Пуск</legend>
+        <div class="hero">
+          <div>
+            <h1 class="hero-title">Аудиокниги из Яндекс Диска</h1>
+            <div class="hero-text">Вставь публичную ссылку на папку или аудиофайл. Плеер сам соберёт главы, сохранит место остановки и откроет всё в мобильном Win98‑интерфейсе.</div>
+          </div>
+          <div class="theme-box">
+            <div class="theme-label">Тема оформления</div>
+            <div class="theme-row">
+              <button id="lightThemeBtn" class="theme-chip" type="button"><span class="theme-dot"></span>Светлая</button>
+              <button id="darkThemeBtn" class="theme-chip" type="button"><span class="theme-dot dark"></span>Тёмная</button>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
-    <section class="progress-wrap">
-      <input id="progress" class="progress" type="range" min="0" max="1000" value="0" aria-label="Позиция" />
-      <div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
-    </section>
+      <fieldset class="group">
+        <legend>Источник</legend>
+        <div class="input-wrap">
+          <input id="urlInput" class="input" type="text" placeholder="https://disk.yandex.ru/d/..." autocapitalize="none" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button id="pasteBtn" class="btn" type="button">Вставить</button>
+          <button id="loadBtn" class="btn primary" type="button">Открыть</button>
+          <button id="continueBtn" class="btn" type="button">Продолжить</button>
+        </div>
+        <div id="status" class="status">Поддерживаются публичные ссылки Яндекс Диска. В папке можно хранить сразу все главы книги.</div>
+      </fieldset>
 
-    <div class="main-controls">
-      <button id="back15" class="skip" aria-label="Назад на 15 секунд"><small>↶</small>15</button>
-      <button id="playBtn" class="play" aria-label="Воспроизвести">▶</button>
-      <button id="forward15" class="skip" aria-label="Вперёд на 15 секунд"><small>↷</small>15</button>
+      <fieldset class="group">
+        <legend>Что нового</legend>
+        <div class="info-grid">
+          <div class="info-card"><div class="info-head">Мобильность</div><div class="info-text">Крупные кнопки, компактная обложка, sticky‑блок управления и удобный список глав на iPhone.</div></div>
+          <div class="info-card"><div class="info-head">Темы</div><div class="info-text">Две системные темы: классическая светлая и тёмная Win98‑версия. Выбор сохраняется.</div></div>
+          <div class="info-card"><div class="info-head">Визуал</div><div class="info-text">Новый сегментный эквалайзер, scanline‑эффект, LED‑индикаторы, бегущая строка и более живой статус‑бар.</div></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>Библиотека</legend>
+        <div id="library" class="library-list"><div class="library-empty">Здесь появятся книги, которые ты уже открывал.</div></div>
+      </fieldset>
+
+      <div class="statusbar">
+        <div class="status-seg" id="sourceStatus">Источник: Яндекс Диск</div>
+        <div class="status-seg" id="libraryCount">Книг: 0</div>
+        <div class="status-seg" id="clockLabel">--:--</div>
+      </div>
     </div>
+  </section>
 
-    <div class="tools">
-      <button id="speedBtn" class="tool">1×</button>
-      <button id="sleepBtn" class="tool">☾ Сон</button>
-      <button id="sourceBtn" class="tool">Источник ↗</button>
+  <section id="playerScreen" class="window hidden">
+    <div class="titlebar">
+      <div class="title-left">
+        <div class="win-icon">►</div>
+        <div id="playerWindowTitle" class="title-text">Слушаю 98 — Плеер</div>
+      </div>
+      <div class="title-actions">
+        <button id="themeTogglePlayer" class="tb-btn" type="button" aria-label="Тема">◐</button>
+        <button id="homeBtn" class="tb-btn" type="button" aria-label="Домой">⌂</button>
+      </div>
     </div>
+    <div class="body stack">
+      <div class="player-grid">
+        <fieldset class="group cover-panel">
+          <legend>Книга</legend>
+          <div id="coverArt" class="cover-art">Аудио</div>
+          <div>
+            <h1 id="bookTitle" class="book-title">Аудиокнига</h1>
+            <div id="bookMeta" class="subtle">0 глав</div>
+            <div id="resumeMeta" class="subtle" style="margin-top:8px">Позиция сохранится автоматически.</div>
+            <div class="mini-marquee" style="margin-top:10px"><span id="marqueeText">Готов к воспроизведению</span></div>
+          </div>
+        </fieldset>
 
-    <div class="section-head"><h2>Главы</h2><span id="chapterCount">0</span></div>
-    <section id="chapters" class="chapter-list"></section>
-  </main>
+        <div class="player-main">
+          <fieldset class="group">
+            <legend>Сейчас играет</legend>
+            <div class="chapter-name" id="chapterNow">Глава 1</div>
+            <div class="row" style="justify-content:space-between;margin-top:6px">
+              <div class="led-strip"><span class="led" id="playLed"></span><span id="ledText">ОЖИДАНИЕ</span></div>
+              <div class="subtle" id="chapterCount">Глав: 0</div>
+            </div>
+          </fieldset>
+
+          <fieldset class="group dock sticky-mobile">
+            <legend>Управление</legend>
+            <div class="progress-wrap">
+              <input id="progress" class="progress" type="range" min="0" max="1000" value="0" />
+              <div class="time-line"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+            </div>
+            <div class="controls compact-mobile">
+              <button id="back15" class="tool-btn big" type="button">« 15 сек</button>
+              <button id="playBtn" class="tool-btn big" type="button">Play</button>
+              <button id="forward15" class="tool-btn big" type="button">15 сек »</button>
+            </div>
+            <div class="controls compact-mobile">
+              <select id="speedSelect" class="select" aria-label="Скорость">
+                <option value="0.8">0.8×</option>
+                <option value="1" selected>1×</option>
+                <option value="1.1">1.1×</option>
+                <option value="1.25">1.25×</option>
+                <option value="1.5">1.5×</option>
+                <option value="1.75">1.75×</option>
+                <option value="2">2×</option>
+              </select>
+              <button id="sleepBtn" class="tool-btn" type="button">Сон…</button>
+              <button id="sourceBtn" class="tool-btn" type="button">Источник</button>
+              <button id="themeBtnInline" class="tool-btn" type="button">Тема</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>Equalizer 98</legend>
+            <div class="eq-shell">
+              <canvas id="viz" aria-hidden="true"></canvas>
+              <div class="eq-labels"><span>EQ 98</span><span id="eqThemeLabel">LIGHT</span></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>Главы</legend>
+            <div id="playlist" class="playlist"><div class="playlist-empty">Нет глав.</div></div>
+          </fieldset>
+        </div>
+      </div>
+
+      <div class="statusbar">
+        <div class="status-seg" id="playerStatus">Готово</div>
+        <div class="status-seg" id="sleepInfo">Сон: выкл.</div>
+        <div class="status-seg" id="sourceInfo">Источник: —</div>
+      </div>
+    </div>
+  </section>
 </div>
 
-<div id="speedSheet" class="sheet-wrap"><div class="sheet"><div class="grab"></div><h3>Скорость</h3><div id="speedChoices" class="choices"></div></div></div>
-<div id="sleepSheet" class="sheet-wrap"><div class="sheet"><div class="grab"></div><h3>Таймер сна</h3><div class="choices">
-  <button class="choice sleep-choice" data-min="15">15 минут</button><button class="choice sleep-choice" data-min="30">30 минут</button>
-  <button class="choice sleep-choice" data-min="45">45 минут</button><button class="choice sleep-choice" data-min="60">1 час</button>
-  <button class="choice sleep-choice" data-min="90">1,5 часа</button><button class="choice" id="sleepOff">Выключить</button>
-</div><div class="custom-row"><input id="customSleep" type="number" min="1" max="600" inputmode="numeric" placeholder="Своё время, мин"><button id="customSleepBtn" class="btn primary">Поставить</button></div>
-<p class="sheet-note">Таймер хранит абсолютное время окончания. Если iOS приостановит страницу после блокировки экрана, приложение проверит таймер сразу после следующего доступного события.</p></div></div>
-<div id="toast" class="toast"></div>
+<div id="sleepDialog" class="dialog-backdrop">
+  <div class="dialog window">
+    <div class="titlebar inactive">
+      <div class="title-left"><div class="win-icon">☾</div><div class="title-text">Таймер сна</div></div>
+      <div class="title-actions"><button id="closeSleepDialog" class="tb-btn" type="button">×</button></div>
+    </div>
+    <div class="body stack">
+      <fieldset class="group">
+        <legend>Быстрый выбор</legend>
+        <div class="preset-grid">
+          <button class="btn sleep-preset" type="button" data-min="15">15 мин</button>
+          <button class="btn sleep-preset" type="button" data-min="30">30 мин</button>
+          <button class="btn sleep-preset" type="button" data-min="45">45 мин</button>
+          <button class="btn sleep-preset" type="button" data-min="60">60 мин</button>
+          <button class="btn sleep-preset" type="button" data-min="90">90 мин</button>
+          <button id="sleepOff" class="btn" type="button">Выключить</button>
+        </div>
+      </fieldset>
+      <fieldset class="group">
+        <legend>Своё время</legend>
+        <div class="row">
+          <input id="customSleep" class="input" type="number" min="1" max="600" placeholder="Минуты" style="max-width:160px" />
+          <button id="customSleepBtn" class="btn primary" type="button">Поставить</button>
+        </div>
+        <div class="status">Если iPhone заморозит страницу, таймер всё равно проверится при следующем событии.</div>
+      </fieldset>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast window hidden"><div class="body" id="toastText"></div></div>
 <audio id="audio" preload="metadata" playsinline></audio>
 
 <script>
 (()=>{
 'use strict';
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const audio=$('#audio');
-const STORE='slushayu_pwa_v2';
-const LEGACY='ab_player_v1';
-const EXAMPLE='https://knigi-audio.ru/roman-proza/51636-dvesti-tretij-den-zimy-olga-pticeva.html';
-let state=loadState(), book=null, chapterIndex=0, saveTick=0, sleepDeadline=0, sleepTimer=null, isSeeking=false;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const audio = $('#audio');
+const STORE = 'slushayu_ydisk_win98_v2';
+const SW_VERSION = 'v7';
+const EXAMPLE = 'https://disk.yandex.ru/d/F-KWXW-fwmrWcg';
+const FETCHERS = [
+  {name:'напрямую', make:u=>u},
+  {name:'AllOrigins', make:u=>'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)},
+  {name:'CorsProxy', make:u=>'https://corsproxy.io/?url=' + encodeURIComponent(u)}
+];
+
+const state = loadState();
+let book = null;
+let chapterIndex = 0;
+let isSeeking = false;
+let saveTick = 0;
+let loadingChapter = false;
+let retryingFreshLink = false;
+let sleepDeadline = Number(localStorage.getItem('slushayu_sleep_deadline') || 0);
+let sleepTimer = null;
 
 function loadState(){
   try{
-    let s=JSON.parse(localStorage.getItem(STORE));
-    if(s&&s.books)return s;
-    const old=JSON.parse(localStorage.getItem(LEGACY));
-    if(old&&old.books){localStorage.setItem(STORE,JSON.stringify(old));return old}
+    const raw = JSON.parse(localStorage.getItem(STORE));
+    if(raw && raw.books) return raw;
   }catch{}
-  return {books:{},lastUrl:''};
+  return { books:{}, lastUrl:'', theme:'light' };
 }
-function saveState(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch{}}
-function cleanKey(url){return (url||'').replace(/#.*$/,'').replace(/\/$/,'')}
-function fmt(sec){sec=Number.isFinite(sec)?Math.max(0,Math.floor(sec)):0;const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`}
-function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),1700)}
-function status(msg,error=false){const e=$('#status');e.textContent=msg;e.classList.toggle('error',error)}
-function normalizeInput(raw){let url=(raw||'').trim();if(!url)throw new Error('Вставь ссылку на книгу.');if(!/^https?:\/\//i.test(url))url='https://'+url;const u=new URL(url);if(!/(^|\.)knigi-audio\.ru$/i.test(u.hostname))throw new Error('Сейчас источник настроен только на knigi-audio.ru.');u.hash='';return cleanKey(u.href)}
-function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;if(n>10&&n<20)return c;if(n1>1&&n1<5)return b;if(n1===1)return a;return c}
-function svgCover(title){const safe=(title||'AUDIOBOOK').slice(0,64).replace(/[&<>"']/g,'');const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><defs><radialGradient id="g"><stop stop-color="#313743"/><stop offset="1" stop-color="#0e1116"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><circle cx="450" cy="130" r="190" fill="#c6ff4f" opacity=".12"/><text x="42" y="470" fill="#fff" font-size="42" font-family="Arial" font-weight="700">СЛУШАЮ</text><text x="42" y="515" fill="#c6ff4f" font-size="17" font-family="Arial">${safe}</text></svg>`;return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}
+function saveState(){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch{} }
+function cleanKey(url){ return String(url || '').trim().replace(/#.*$/,'').replace(/\/$/,''); }
+function fmt(sec){ sec = Number.isFinite(sec) ? Math.max(0, Math.floor(sec)) : 0; const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60; return h ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`; }
+function plural(n,a,b,c){ n=Math.abs(n)%100; const n1=n%10; if(n>10&&n<20) return c; if(n1===1) return a; if(n1>1&&n1<5) return b; return c; }
+function naturalCompare(a,b){ return String(a||'').localeCompare(String(b||''),'ru',{numeric:true,sensitivity:'base'}); }
+function isYandexLink(url){ try{ const u = new URL(url); return /(^|\.)disk\.yandex\.(ru|com)$/i.test(u.hostname) || /^yadi\.sk$/i.test(u.hostname); }catch{ return false; } }
+function normalizeInput(raw){
+  let url = String(raw || '').trim();
+  if(!url) throw new Error('Вставь ссылку на Яндекс Диск.');
+  if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  if(!isYandexLink(url)) throw new Error('Сейчас поддерживаются только публичные ссылки Яндекс Диска.');
+  const u = new URL(url); u.hash = ''; return cleanKey(u.href);
+}
+function status(msg, error=false){ const el = $('#status'); el.textContent = msg; el.classList.toggle('error', !!error); }
+function playerStatus(msg){ $('#playerStatus').textContent = msg; $('#marqueeText').textContent = msg; }
+function toast(msg){ $('#toastText').textContent = msg; const box = $('#toast'); box.classList.remove('hidden'); clearTimeout(box._t); box._t = setTimeout(()=>box.classList.add('hidden'), 1700); }
+function setTheme(theme){
+  const next = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  state.theme = next; saveState();
+  $('#lightThemeBtn').classList.toggle('active', next === 'light');
+  $('#darkThemeBtn').classList.toggle('active', next === 'dark');
+  $('#eqThemeLabel').textContent = next.toUpperCase();
+}
+function toggleTheme(){ setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+function makeCoverText(title){ return String(title || 'Аудио').replace(/[_-]+/g,' ').trim().split(/\s+/).slice(0,4).join(' '); }
+function audioLike(name='', mime=''){ return /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|m4b)$/i.test(name) || /^audio\//i.test(mime); }
+function extFromName(name=''){ const m = String(name).match(/\.([A-Za-z0-9]+)$/); return m ? m[1].toUpperCase() : 'AUDIO'; }
+function humanSize(bytes){ const n=Number(bytes||0); if(!n) return ''; if(n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} КБ`; return `${(n / (1024*1024)).toFixed(1)} МБ`; }
+function escapeHtml(text){ return String(text).replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s])); }
 
-async function fetchRemoteText(url, kind='page'){
-  const isPage=kind==='page';
-  const attempts=[
-    {name:'напрямую',url},
-    {name:'AllOrigins',url:'https://api.allorigins.win/raw?url='+encodeURIComponent(url)},
-    {name:'CorsProxy',url:'https://corsproxy.io/?url='+encodeURIComponent(url)}
-  ];
-  const errors=[];
-  for(const a of attempts){
-    try{
-      status(`${isPage?'Открываю страницу':'Читаю плейлист'} · ${a.name}…`);
-      const ctl=new AbortController(), timer=setTimeout(()=>ctl.abort(),18000);
-      const r=await fetch(a.url,{cache:'no-store',signal:ctl.signal,headers:{Accept:isPage?'text/html,application/xhtml+xml,*/*;q=.8':'application/json,text/plain,*/*'}});
-      clearTimeout(timer);
-      const txt=await r.text();
-      if(!r.ok)throw new Error(`HTTP ${r.status}`);
-      if(txt.length<(isPage?500:8))throw new Error('слишком короткий ответ');
-      if(/captcha|cloudflare|access denied|forbidden/i.test(txt.slice(0,5000)))throw new Error('защитная страница');
-      return {text:txt,via:a.name,url};
-    }catch(e){errors.push(`${a.name}: ${e.message}`)}
-  }
-  const err=new Error(errors.join(' · '));
-  err.attempts=errors;
-  throw err;
-}
-const FETCHERS=[
-  {name:'напрямую',make:u=>u},
-  {name:'AllOrigins',make:u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)},
-  {name:'CorsProxy',make:u=>'https://corsproxy.io/?url='+encodeURIComponent(u)}
-];
-async function fetchOne(url,fetcher,timeout=18000){
-  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeout);
-  try{
-    const r=await fetch(fetcher.make(url),{cache:'no-store',signal:ctl.signal,headers:{Accept:'text/html,application/json,text/plain,*/*'}});
-    const txt=await r.text();
-    if(!r.ok)throw new Error(`HTTP ${r.status}`);
-    if(txt.length<20)throw new Error('пустой ответ');
-    if(/captcha|cloudflare|access denied|forbidden/i.test(txt.slice(0,5000)))throw new Error('защитная страница');
-    return {html:txt,via:fetcher.name,finalUrl:r.url};
-  }finally{clearTimeout(timer)}
-}
 async function fetchText(url){
-  const errors=[];
-  for(const f of FETCHERS){
-    try{status(`Проверяю плеер · ${f.name}…`);return await fetchOne(url,f)}
-    catch(e){errors.push(`${f.name}: ${e.message}`)}
-  }
-  throw new Error('Не удалось получить ресурс. '+errors.join(' · '));
-}
-async function fetchVariants(url){
-  const ok=[],errors=[];
-  for(const f of FETCHERS){
-    try{status(`Получаю страницу · ${f.name}…`);ok.push(await fetchOne(url,f))}
-    catch(e){errors.push(`${f.name}: ${e.message}`)}
-  }
-  if(!ok.length)throw new Error('Не удалось получить страницу. '+errors.join(' · '));
-  return ok;
-}
-function decodeValue(value){
-  if(value==null)return '';
-  let v=String(value).trim();
-  try{v=new DOMParser().parseFromString('<textarea>'+v+'</textarea>','text/html').querySelector('textarea').value}catch{}
-  return v.replace(/\\u002[fF]/g,'/').replace(/\\x2[fF]/g,'/').replace(/\\\//g,'/').replace(/^['"]|['"]$/g,'').trim();
-}
-function absUrl(value,pageUrl){
-  value=decodeValue(value);if(!value)return null;
-  if(/^data:|^blob:|^javascript:|^mailto:/i.test(value))return null;
-  try{return new URL(value,pageUrl).href}catch{return null}
-}
-function isAudioExt(u){return /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac|m3u8)(?:$|[?#])/i.test(u||'')}
-function looksPlayerResource(u){return /(?:player|playlist|audio|audiobook|track|stream|listen|ajax|engine|media|book)[^\s]*?(?:\.php|\.json|\.js|\/|\?|$)/i.test(u||'')}
-function cleanName(s,fallback='Глава'){s=(s||'').replace(/\s+/g,' ').replace(/[<>]/g,'').trim();return(!s||s.length>140)?fallback:s}
-function tryDecodeBase64(s){try{if(!/^[A-Za-z0-9+/=_-]{40,}$/.test(s))return null;let x=s.replace(/-/g,'+').replace(/_/g,'/');while(x.length%4)x+='=';const bin=atob(x);let out='';try{out=new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}catch{out=bin}return /https?:\/\/|\.(?:mp3|m4a|m3u8)/i.test(out)?out:null}catch{return null}}
-function splitPacked(value){
-  const v=decodeValue(value);if(!v)return [];
-  if((v.startsWith('[')&&v.endsWith(']'))||(v.startsWith('{')&&v.endsWith('}'))){try{return [JSON.parse(v)]}catch{}}
-  if(v.includes('|')&&/https?:|\.(?:mp3|m4a|m3u8)/i.test(v))return v.split('|').map(x=>x.trim()).filter(Boolean);
-  if(v.includes(',')&&(/\[[^\]]+\]\s*(?:https?:|\/)/i.test(v)||(v.match(/https?:\/\//g)||[]).length>1))return v.split(/,(?=\s*(?:\[[^\]]+\]\s*)?(?:https?:\/\/|\/))/).map(x=>x.trim()).filter(Boolean);
-  return [v];
-}
-function inspectPayload(text,baseUrl){
-  const audios=[],resources=[],meta={title:'',cover:''};
-  const audioSeen=new Set(),resSeen=new Set();
-  const addAudio=(value,name,trust=false,source='scan')=>{
-    const walk=(v,label)=>{
-      if(v==null)return;
-      if(Array.isArray(v)){v.forEach((x,i)=>walk(x,label||`Глава ${i+1}`));return}
-      if(typeof v==='object'){
-        const nm=cleanName(v.title||v.name||v.label||v.chapter||label||'');
-        for(const [k,val] of Object.entries(v)){
-          if(/^(file|audio|mp3|stream|track|url|src|source)$/i.test(k))walk(val,nm);
-          else if(/playlist|tracks|chapters|files|items/i.test(k))walk(val,nm);
-        }
-        return;
-      }
-      const raw=decodeValue(v);if(!raw)return;
-      const tagged=raw.match(/^\s*\[([^\]]{1,140})\]\s*(.+)$/);if(tagged){walk(tagged[2],tagged[1]);return}
-      const b64=tryDecodeBase64(raw);if(b64&&b64!==raw){scanRaw(b64,label);return}
-      if(trust&&!isAudioExt(raw)&&!(/^(?:https?:)?\/\//i.test(raw)||/^\.{0,2}\//.test(raw)||/[/?=&]/.test(raw)))return;
-      const u=absUrl(raw,baseUrl);if(!u)return;
-      if(!trust&&!isAudioExt(u))return;
-      if(audioSeen.has(u))return;audioSeen.add(u);
-      audios.push({url:u,name:cleanName(label,`Глава ${audios.length+1}`),source});
-    };
-    splitPacked(value).forEach(v=>walk(v,name));
-  };
-  const addResource=(value,type='resource',priority=5)=>{
-    const u=absUrl(value,baseUrl);if(!u||resSeen.has(u))return;
-    if(!/^https?:/i.test(u))return;
-    resSeen.add(u);resources.push({url:u,type,priority});
-  };
-  const inspectJson=(obj,label='')=>{
-    if(obj==null)return;
-    if(Array.isArray(obj)){obj.forEach((v,i)=>inspectJson(v,label||`Глава ${i+1}`));return}
-    if(typeof obj!=='object')return;
-    const nm=cleanName(obj.title||obj.name||obj.label||obj.chapter||label||'');
-    for(const [k,v] of Object.entries(obj)){
-      if(typeof v==='string'){
-        if(/^(file|audio|mp3|stream|track|source)$/i.test(k))addAudio(v,nm,true,'json:'+k);
-        else if(/^(url|src)$/i.test(k)){isAudioExt(v)?addAudio(v,nm,false,'json:'+k):(/^https?:|^\//.test(v)&&looksPlayerResource(v)&&addResource(v,'json-url',2))}
-        else if(/playlist|config|endpoint|api/i.test(k))addResource(v,'json:'+k,1);
-      }
-      if(typeof v==='object')inspectJson(v,nm);
-    }
-  };
-  function scanRaw(raw,label=''){
-    raw=String(raw||'').replace(/\\u002[fF]/g,'/').replace(/\\x2[fF]/g,'/').replace(/\\\//g,'/');
-    let m;
-    const absAudio=/(https?:\/\/[^\s"'<>\\]+?\.(?:mp3|m4a|aac|ogg|oga|opus|wav|flac|m3u8)(?:\?[^\s"'<>\\]*)?)/gi;
-    while((m=absAudio.exec(raw)))addAudio(m[1],label||`Глава ${audios.length+1}`,false,'raw-url');
-    const relAudio=/(["'])(\/[^"']+?\.(?:mp3|m4a|aac|ogg|oga|opus|wav|flac|m3u8)(?:\?[^"']*)?)\1/gi;
-    while((m=relAudio.exec(raw)))addAudio(m[2],label||`Глава ${audios.length+1}`,false,'raw-relative');
-    const trusted=/\b(file|audio|mp3|stream|track|source)\s*[:=]\s*["']([^"']{3,})["']/gi;
-    while((m=trusted.exec(raw)))addAudio(m[2],label||`Глава ${audios.length+1}`,true,'key:'+m[1]);
-    const named1=/(?:title|name|label|chapter)\s*[:=]\s*["']([^"']{1,140})["'][\s\S]{0,500}?(?:file|audio|mp3|stream|track|source)\s*[:=]\s*["']([^"']+)["']/gi;
-    while((m=named1.exec(raw)))addAudio(m[2],m[1],true,'named-pair');
-    const named2=/(?:file|audio|mp3|stream|track|source)\s*[:=]\s*["']([^"']+)["'][\s\S]{0,500}?(?:title|name|label|chapter)\s*[:=]\s*["']([^"']{1,140})["']/gi;
-    while((m=named2.exec(raw)))addAudio(m[1],m[2],true,'named-pair');
-    const playlist=/\b(?:playlist|config|endpoint|api)\s*[:=]\s*["']([^"']{2,})["']/gi;
-    while((m=playlist.exec(raw)))addResource(m[1],'inline-'+m[0].split(/\s/)[0],1);
-    const ajaxStr=/["']([^"']*(?:ajax|player|playlist|audio|stream|track)[^"']*(?:\.php|\.json|\?|\/)[^"']*)["']/gi;
-    let n=0;while((m=ajaxStr.exec(raw))&&n<30){if(!/\.(css|png|jpe?g|svg|woff2?)(?:\?|$)/i.test(m[1])){addResource(m[1],'inline-endpoint',3);n++}}
-    const strings=raw.match(/[A-Za-z0-9+/_=-]{70,}/g)||[];
-    for(const s of strings.slice(0,120)){const d=tryDecodeBase64(s);if(d)scanRaw(d,label)}
-  }
-  const htmlish=/<(?:html|body|div|audio|iframe|script|meta|source)\b/i.test(text||'');
-  if(htmlish){
-    const doc=new DOMParser().parseFromString(text,'text/html');
-    meta.title=cleanName(doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('h1')?.textContent||doc.title||'','');
-    meta.cover=absUrl(doc.querySelector('meta[property="og:image"]')?.content,baseUrl)||'';
-    doc.querySelectorAll('audio,source').forEach((el,i)=>{
-      const label=el.getAttribute('title')||el.getAttribute('data-title')||el.getAttribute('aria-label')||`Глава ${i+1}`;
-      ['src','data-src','data-file','data-audio'].forEach(a=>{const v=el.getAttribute(a);if(v)addAudio(v,label,true,'media-element')});
-    });
-    doc.querySelectorAll('[data-file],[data-audio],[data-mp3],[data-track],[data-stream],[data-source]').forEach((el,i)=>{
-      const label=el.getAttribute('data-title')||el.getAttribute('title')||el.getAttribute('aria-label')||el.textContent||`Глава ${i+1}`;
-      ['data-file','data-audio','data-mp3','data-track','data-stream','data-source'].forEach(a=>{const v=el.getAttribute(a);if(v)addAudio(v,label,true,'data-attr')});
-    });
-    doc.querySelectorAll('[data-playlist],[data-config],[data-endpoint],[data-api]').forEach(el=>['data-playlist','data-config','data-endpoint','data-api'].forEach(a=>{const v=el.getAttribute(a);if(v){const packed=splitPacked(v);packed.forEach(x=>typeof x==='object'?inspectJson(x):addResource(x,'data-'+a,1))}}));
-    doc.querySelectorAll('a[href]').forEach((el,i)=>{const h=el.getAttribute('href');if(isAudioExt(h))addAudio(h,el.textContent||`Глава ${i+1}`,false,'audio-link')});
-    doc.querySelectorAll('iframe[src]').forEach(el=>addResource(el.getAttribute('src'),'iframe',0));
-    let scriptCount=0;
-    doc.querySelectorAll('script[src]').forEach(el=>{const src=el.getAttribute('src');if(scriptCount<10&&(/player|audio|main|app|custom|engine|script|bundle/i.test(src||'')||scriptCount<4)){addResource(src,'script',4);scriptCount++}});
-    doc.querySelectorAll('script[type*="json"],script[type="application/ld+json"]').forEach(el=>{try{inspectJson(JSON.parse(el.textContent||''))}catch{}});
-    if(!meta.cover){const imgs=[...doc.images].map(i=>({src:absUrl(i.getAttribute('src')||i.getAttribute('data-src'),baseUrl),area:(i.width||0)*(i.height||0)})).filter(x=>x.src);meta.cover=(imgs.sort((a,b)=>b.area-a.area)[0]||{}).src||''}
-  }else{
-    try{inspectJson(JSON.parse(text))}catch{}
-  }
-  scanRaw(text);
-  resources.sort((a,b)=>a.priority-b.priority);
-  return {meta,audios,resources};
-}
-async function discoverBook(html,pageUrl){
-  const first=inspectPayload(html,pageUrl),chapters=[],audioSeen=new Set();
-  const discoveredResources=[];
-  const addChapters=(arr)=>arr.forEach(ch=>{if(!audioSeen.has(ch.url)){audioSeen.add(ch.url);chapters.push(ch)}});
-  addChapters(first.audios);discoveredResources.push(...first.resources);
-  const queue=[...first.resources],seenRes=new Set(),debugResources=[];
-  let fetched=0;
-  while(queue.length&&fetched<16&&chapters.length<400){
-    const r=queue.shift();if(!r?.url||seenRes.has(r.url))continue;seenRes.add(r.url);debugResources.push(`${r.type}: ${r.url}`);
+  const errors = [];
+  for(const fetcher of FETCHERS){
     try{
-      status(`Ищу дорожки · ${r.type} ${fetched+1}/16…`);
-      const got=await fetchText(r.url);fetched++;
-      const ex=inspectPayload(got.html,r.url);addChapters(ex.audios);
-      ex.resources.forEach(n=>{if(!seenRes.has(n.url)&&queue.length<40)queue.push(n)});
-    }catch(e){debugResources.push(`ошибка: ${r.url} → ${e.message}`);fetched++}
+      const ctl = new AbortController();
+      const timer = setTimeout(()=>ctl.abort(), 18000);
+      const res = await fetch(fetcher.make(url), { cache:'no-store', signal:ctl.signal, headers:{ Accept:'application/json,text/plain,*/*' } });
+      clearTimeout(timer);
+      const text = await res.text();
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      if(!text) throw new Error('пустой ответ');
+      return text;
+    }catch(err){ errors.push(fetcher.name + ': ' + (err && err.message || err)); }
   }
-  return {url:cleanKey(pageUrl),title:first.meta.title||'Аудиокнига',cover:first.meta.cover||'',chapters,debugResources};
+  throw new Error(errors.join(' · '));
 }
-function makeDebug(html,resources=[]){
-  const raw=String(html||'').replace(/\s+/g,' ');const keys=['player','playlist','audio','iframe','ajax','data-file','stream','track'];const parts=[];
-  for(const k of keys){let from=0,hits=0;while(hits<3){const i=raw.toLowerCase().indexOf(k,from);if(i<0)break;parts.push(`…${raw.slice(Math.max(0,i-220),Math.min(raw.length,i+520))}…`);from=i+k.length;hits++}}
-  return `РЕСУРСЫ ПЛЕЕРА:\n${resources.slice(0,40).join('\n')||'не обнаружены'}\n\nФРАГМЕНТЫ HTML/JS:\n${parts.join('\n\n')||raw.slice(0,12000)}`;
+async function fetchJson(url){ const text = await fetchText(url); try{ return JSON.parse(text); }catch{ throw new Error('JSON не разобрался'); } }
+function apiUrl(path, params){ const u = new URL('https://cloud-api.yandex.net/v1/disk/' + path); Object.entries(params).forEach(([k,v])=>{ if(v!==undefined && v!==null && v!=='') u.searchParams.set(k, v); }); return u.href; }
+async function getResource(publicKey, pathValue='', offset=0, limit=200){ return fetchJson(apiUrl('public/resources', { public_key: publicKey, path: pathValue || undefined, offset, limit })); }
+async function getDownloadLink(publicKey, pathValue=''){ const json = await fetchJson(apiUrl('public/resources/download', { public_key: publicKey, path: pathValue || undefined })); if(json && json.href) return json.href; throw new Error('Yandex не вернул ссылку на скачивание'); }
+async function collectAudio(publicKey, pathValue='', depth=0, collector=[]){
+  if(depth > 6) return collector;
+  let offset = 0;
+  let first = true;
+  while(true){
+    const data = await getResource(publicKey, pathValue, offset, 200);
+    if(first){
+      if((data.type === 'file' || audioLike(data.name, data.mime_type)) && audioLike(data.name, data.mime_type)){
+        collector.push({ name:data.name || `Глава ${collector.length+1}`, path:data.path || pathValue || '', mime:data.mime_type || '', size:data.size || 0, direct:data.file || '', source:'yandex' });
+        return { title:data.name || 'Аудиофайл', items:collector, type:'file' };
+      }
+    }
+    const items = data && data._embedded && Array.isArray(data._embedded.items) ? data._embedded.items : [];
+    for(const item of items){
+      if(item.type === 'dir') await collectAudio(publicKey, item.path || '', depth + 1, collector);
+      else if(audioLike(item.name, item.mime_type)) collector.push({ name:item.name || `Глава ${collector.length+1}`, path:item.path || '', mime:item.mime_type || '', size:item.size || 0, direct:item.file || '', source:'yandex' });
+    }
+    const total = data && data._embedded ? Number(data._embedded.total || items.length) : items.length;
+    offset += items.length;
+    first = false;
+    if(!items.length || offset >= total) return { title:data.name || 'Папка', items:collector, type:data.type || 'dir' };
+  }
+}
+function normalizeTracks(items){
+  const clean = items.filter(Boolean).map((item, idx)=>({ id:idx+1, name:String(item.name || '').trim() || `Глава ${idx+1}`, path:item.path || '', mime:item.mime || '', size:item.size || 0, direct:item.direct || '', href:'', hrefTs:0 }));
+  clean.sort((a,b)=>naturalCompare(a.name,b.name));
+  return clean.map((item, idx)=>({ ...item, order:idx+1 }));
+}
+function buildBook(publicKey, payload){
+  const chapters = normalizeTracks(payload.items || []);
+  if(!chapters.length) throw new Error('В этой папке не найдено ни одного аудиофайла.');
+  return { source:'yandex', url:publicKey, title:payload.title || 'Аудиокнига', coverText:makeCoverText(payload.title || 'Аудиокнига'), chapters };
 }
 
-async function openUrl(raw,restore=true){
-  let url;try{url=normalizeInput(raw)}catch(e){status(e.message,true);return}
-  $('#loadBtn').disabled=true;$('#loadBtn').innerHTML='Загружаю…';$('#debug').classList.remove('show');
-  let bestDebug='',lastErr='';
+async function openUrl(raw, autoplay=false){
   try{
-    const variants=await fetchVariants(url);
-    for(let i=0;i<variants.length;i++){
-      const variant=variants[i];
-      try{
-        status(`Анализирую плеер · ${variant.via}…`);
-        const parsed=await discoverBook(variant.html,url);parsed.via=variant.via;
-        if(parsed.chapters.length){
-          book=parsed;state.lastUrl=url;state.books[url]=state.books[url]||{};
-          Object.assign(state.books[url],{title:book.title,cover:book.cover,chapterCount:book.chapters.length,updated:Date.now()});saveState();renderBook();
-          const saved=state.books[url];chapterIndex=restore?Math.min(saved.chapter||0,book.chapters.length-1):0;
-          await loadChapter(chapterIndex,restore?(saved.time||0):0,false);showPlayer();status('');toast(`Найдено ${book.chapters.length} ${plural(book.chapters.length,'глава','главы','глав')}`);return;
-        }
-        bestDebug=makeDebug(variant.html,parsed.debugResources);lastErr=`${variant.via}: дорожки не найдены`;
-      }catch(e){lastErr=`${variant.via}: ${e.message}`;bestDebug=bestDebug||makeDebug(variant.html,[])}
-    }
-    $('#debug').textContent=bestDebug;$('#debug').classList.add('show');
-    throw new Error('Плеер на странице есть, но его список дорожек формируется динамически. Я проверил HTML, iframe, конфиги и скрипты, но не получил воспроизводимый URL. Диагностика ниже поможет добить именно этот API. '+lastErr);
-  }catch(e){status(e.message,true)}finally{$('#loadBtn').disabled=false;$('#loadBtn').innerHTML='Открыть книгу <span>→</span>';renderLibrary()}
-}
-function renderBook(){
-  $('#bookTitle').textContent=book.title;$('#chapterCount').textContent=String(book.chapters.length);$('#cover').src=book.cover||svgCover(book.title);$('#chapters').innerHTML='';
-  book.chapters.forEach((ch,i)=>{const b=document.createElement('button');b.className='chapter';b.dataset.index=i;b.innerHTML=`<span class="chapter-num">${String(i+1).padStart(2,'0')}</span><span class="chapter-name"></span><span class="chapter-mark"></span>`;b.querySelector('.chapter-name').textContent=ch.name||`Глава ${i+1}`;b.onclick=()=>loadChapter(i,0,true);$('#chapters').appendChild(b)});refreshChapterList();
-}
-async function loadChapter(index,time=0,autoplay=false){
-  if(!book)return;saveProgress(true);chapterIndex=Math.max(0,Math.min(index,book.chapters.length-1));const ch=book.chapters[chapterIndex];audio.pause();audio.src=ch.url;audio.load();$('#chapterNow').textContent=ch.name||`Глава ${chapterIndex+1}`;refreshChapterList();updateMediaSession();
-  const setTime=()=>{if(Number.isFinite(audio.duration)&&time>0&&time<audio.duration-1)audio.currentTime=time;audio.removeEventListener('loadedmetadata',setTime);updateProgress()};audio.addEventListener('loadedmetadata',setTime);
-  if(autoplay){try{await audio.play()}catch{toast('Нажми Play для запуска')}}
-}
-function refreshChapterList(){$$('.chapter').forEach((e,i)=>{e.classList.toggle('active',i===chapterIndex);e.querySelector('.chapter-mark').textContent=i===chapterIndex?'СЕЙЧАС':''})}
-function showPlayer(){$('#homeScreen').classList.remove('active');$('#playerScreen').classList.add('active');$('#homeBtn').style.display='grid';window.scrollTo({top:0,behavior:'instant'})}
-function showHome(){saveProgress(true);$('#playerScreen').classList.remove('active');$('#homeScreen').classList.add('active');$('#homeBtn').style.display='none';renderLibrary();window.scrollTo({top:0,behavior:'instant'})}
-function saveProgress(force=false){if(!book)return;const now=Date.now();if(!force&&now-saveTick<2500)return;saveTick=now;const url=cleanKey(book.url),rec=state.books[url]||{};Object.assign(rec,{title:book.title,cover:book.cover,chapter:chapterIndex,time:audio.currentTime||0,duration:audio.duration||rec.duration||0,speed:audio.playbackRate||1,updated:now,chapterCount:book.chapters.length});state.books[url]=rec;state.lastUrl=url;saveState()}
-function renderLibrary(){
-  const entries=Object.entries(state.books||{}).sort((a,b)=>(b[1].updated||0)-(a[1].updated||0));$('#libraryCount').textContent=entries.length?`${entries.length} ${plural(entries.length,'книга','книги','книг')}`:'0';const box=$('#library');box.innerHTML='';
-  if(!entries.length){box.innerHTML='<div class="library-empty">Здесь появятся книги, которые ты откроешь.</div>';return}
-  entries.forEach(([url,rec])=>{const p=rec.duration?Math.max(0,Math.min(100,(rec.time||0)/rec.duration*100)):0;const b=document.createElement('button');b.className='book-card';b.innerHTML='<img class="book-card-cover"><div><div class="book-card-title"></div><div class="book-card-meta"></div><div class="mini-progress"><i></i></div></div><span class="book-card-play">▶</span>';b.querySelector('img').src=rec.cover||svgCover(rec.title||'AUDIOBOOK');b.querySelector('.book-card-title').textContent=rec.title||'Аудиокнига';b.querySelector('.book-card-meta').textContent=`Глава ${(rec.chapter||0)+1} · ${fmt(rec.time||0)}`;b.querySelector('.mini-progress i').style.width=p+'%';b.onclick=()=>{urlInput.value=url;openUrl(url,true)};box.appendChild(b)});
-}
-function updateProgress(){const d=audio.duration||0,c=audio.currentTime||0,p=d?c/d:0;if(!isSeeking){progress.value=Math.round(p*1000);progress.style.setProperty('--p',`${p*100}%`)}currentTime.textContent=fmt(c);duration.textContent=fmt(d);updateSleepLabel()}
-function togglePlay(){audio.paused?audio.play().catch(()=>toast('Нажми Play ещё раз')):audio.pause()}
-function seekBy(delta){if(Number.isFinite(audio.duration))audio.currentTime=Math.max(0,Math.min(audio.duration,audio.currentTime+delta))}
-function setSpeed(v){audio.playbackRate=v;audio.defaultPlaybackRate=v;speedBtn.textContent=`${v}×`;renderSpeedChoices();saveProgress(true)}
-function renderSpeedChoices(){const vals=[.8,1,1.1,1.2,1.35,1.5,1.75,2],box=$('#speedChoices');box.innerHTML='';vals.forEach(v=>{const b=document.createElement('button');b.className='choice'+(Math.abs(v-audio.playbackRate)<.01?' active':'');b.textContent=`${v}×`;b.onclick=()=>{setSpeed(v);closeSheets()};box.appendChild(b)})}
-function updateMediaSession(){if(!('mediaSession'in navigator)||!book)return;try{navigator.mediaSession.metadata=new MediaMetadata({title:book.chapters[chapterIndex]?.name||book.title,artist:book.title,album:'Слушаю',artwork:book.cover?[{src:book.cover}]:[]});navigator.mediaSession.setActionHandler('play',()=>audio.play());navigator.mediaSession.setActionHandler('pause',()=>audio.pause());navigator.mediaSession.setActionHandler('seekbackward',d=>seekBy(-(d.seekOffset||15)));navigator.mediaSession.setActionHandler('seekforward',d=>seekBy(d.seekOffset||15));navigator.mediaSession.setActionHandler('previoustrack',()=>chapterIndex>0&&loadChapter(chapterIndex-1,0,true));navigator.mediaSession.setActionHandler('nexttrack',()=>chapterIndex<book.chapters.length-1&&loadChapter(chapterIndex+1,0,true))}catch{}}
-
-function setSleep(minutes){sleepDeadline=Date.now()+minutes*60000;localStorage.setItem('slushayu_sleep',String(sleepDeadline));clearInterval(sleepTimer);sleepTimer=setInterval(checkSleep,1000);updateSleepLabel();closeSheets();toast(`Сон через ${minutes} мин`)}
-function clearSleep(silent=false){sleepDeadline=0;localStorage.removeItem('slushayu_sleep');clearInterval(sleepTimer);sleepTimer=null;updateSleepLabel();closeSheets();if(!silent)toast('Таймер выключен')}
-function checkSleep(){if(!sleepDeadline)return;const left=sleepDeadline-Date.now();if(left<=0){audio.pause();clearSleep(true);toast('Таймер сна сработал')}else updateSleepLabel()}
-function updateSleepLabel(){if(!sleepDeadline){sleepBtn.textContent='☾ Сон';sleepBtn.classList.remove('on');return}const min=Math.ceil(Math.max(0,sleepDeadline-Date.now())/60000);sleepBtn.textContent=`☾ ${min} мин`;sleepBtn.classList.add('on')}
-function closeSheets(){$$('.sheet-wrap').forEach(s=>s.classList.remove('show'))}
-
-/* Equalizer: true analyser for same-origin audio; safe playback-linked animation for remote media. */
-const canvas=$('#visualizer'),ctx=canvas.getContext('2d');let raf=0,phase=0,audioCtx=null,analyser=null,sourceNode=null,realAnalyser=false;
-function resizeViz(){const dpr=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(r.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0)}
-function canUseRealAnalyser(){try{return new URL(audio.currentSrc||audio.src,location.href).origin===location.origin}catch{return false}}
-function setupAnalyser(){if(sourceNode||!canUseRealAnalyser())return;try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();analyser=audioCtx.createAnalyser();analyser.fftSize=128;analyser.smoothingTimeConstant=.82;sourceNode=audioCtx.createMediaElementSource(audio);sourceNode.connect(analyser);analyser.connect(audioCtx.destination);realAnalyser=true;$('#visualizerMode').textContent='SPECTRUM'}catch{realAnalyser=false}}
-function drawViz(){
-  cancelAnimationFrame(raf);const r=canvas.getBoundingClientRect(),w=r.width,h=r.height;ctx.clearRect(0,0,w,h);const bars=34,gap=4,bw=Math.max(2,(w-gap*(bars-1))/bars),mid=h/2;let data=null;
-  if(realAnalyser&&analyser){data=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(data)}
-  phase+=audio.paused?.008:.055;
-  for(let i=0;i<bars;i++){
-    const x=i*(bw+gap);let a;
-    if(data){const idx=Math.min(data.length-1,Math.floor(i/data.length*data.length));a=data[idx]/255}
-    else{
-      const envelope=.28+.72*Math.sin(Math.PI*(i+1)/(bars+1));
-      const pulse=(Math.sin(phase*1.5+i*.57)+Math.sin(phase*.84+i*.31)+2)/4;
-      a=audio.paused?.055:(.16+.72*pulse)*envelope;
-    }
-    const bh=Math.max(4,a*(h*.78));const y=mid-bh/2;const alpha=audio.paused?.22:(.52+.48*a);
-    ctx.fillStyle=`rgba(198,255,79,${alpha})`;ctx.beginPath();const rr=Math.min(bw/2,3);ctx.roundRect(x,y,bw,bh,rr);ctx.fill();
+    const publicKey = normalizeInput(raw);
+    $('#urlInput').value = publicKey;
+    status('Читаю Яндекс Диск…');
+    const payload = await collectAudio(publicKey, '', 0, []);
+    book = buildBook(publicKey, payload);
+    state.lastUrl = publicKey;
+    saveState();
+    showPlayer();
+    renderBook();
+    restoreSpeed();
+    const rec = state.books[cleanKey(publicKey)] || {};
+    const startChapter = Math.min(book.chapters.length - 1, Math.max(0, Number(rec.chapter || 0)));
+    const startTime = Number(rec.time || 0);
+    await loadChapter(startChapter, startTime, autoplay);
+    renderLibrary();
+    status('Книга открыта.');
+    $('#sourceInfo').textContent = 'Источник: Яндекс Диск';
+  }catch(err){
+    status(err && err.message ? err.message : 'Не удалось открыть ссылку.', true);
+    toast('Ошибка загрузки');
   }
-  raf=requestAnimationFrame(drawViz);
+}
+function showPlayer(){ $('#homeScreen').classList.add('hidden'); $('#playerScreen').classList.remove('hidden'); }
+function showHome(){ saveProgress(true); $('#playerScreen').classList.add('hidden'); $('#homeScreen').classList.remove('hidden'); }
+
+function renderBook(){
+  if(!book) return;
+  $('#playerWindowTitle').textContent = 'Слушаю 98 — ' + book.title;
+  $('#bookTitle').textContent = book.title;
+  $('#bookMeta').textContent = `${book.chapters.length} ${plural(book.chapters.length,'глава','главы','глав')} · Яндекс Диск`;
+  $('#coverArt').textContent = book.coverText;
+  $('#chapterCount').textContent = `Глав: ${book.chapters.length}`;
+  renderPlaylist();
+  updateResumeMeta();
+}
+function renderPlaylist(){
+  const box = $('#playlist'); box.innerHTML = '';
+  if(!book || !book.chapters.length){ box.innerHTML = '<div class="playlist-empty">Нет глав.</div>'; return; }
+  book.chapters.forEach((ch, idx)=>{
+    const row = document.createElement('button');
+    row.className = 'track' + (idx === chapterIndex ? ' active' : '');
+    row.type = 'button';
+    row.innerHTML = `<div><div>${String(idx+1).padStart(2,'0')}. ${escapeHtml(ch.name)}</div><div class="track-meta">${extFromName(ch.name)}${ch.size ? ' · ' + humanSize(ch.size) : ''}</div></div><div>${idx === chapterIndex ? '►' : ''}</div>`;
+    row.addEventListener('click', ()=>loadChapter(idx, 0, true));
+    box.appendChild(row);
+  });
+}
+function renderLibrary(){
+  const entries = Object.entries(state.books || {}).sort((a,b)=>(b[1].updated||0)-(a[1].updated||0));
+  $('#libraryCount').textContent = 'Книг: ' + entries.length;
+  const box = $('#library'); box.innerHTML = '';
+  if(!entries.length){ box.innerHTML = '<div class="library-empty">Здесь появятся книги, которые ты уже открывал.</div>'; return; }
+  entries.forEach(([url, rec])=>{
+    const item = document.createElement('button');
+    item.className = 'library-item'; item.type = 'button';
+    item.innerHTML = `<div><div>${escapeHtml(rec.title || 'Аудиокнига')}</div><div class="book-meta">Глава ${(Number(rec.chapter || 0) + 1)} · ${fmt(rec.time || 0)} · ${rec.chapterCount || 0} ${plural(rec.chapterCount || 0,'глава','главы','глав')}</div></div><div>Открыть</div>`;
+    item.addEventListener('click', ()=>{ $('#urlInput').value = url; openUrl(url, false); });
+    box.appendChild(item);
+  });
 }
 
-loadBtn.onclick=()=>openUrl(urlInput.value,true);urlInput.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')openUrl(urlInput.value,true)});
-pasteBtn.onclick=async()=>{try{urlInput.value=await navigator.clipboard.readText();toast('Вставлено')}catch{urlInput.focus();toast('Зажми поле → «Вставить»')}};
-homeBtn.onclick=showHome;playBtn.onclick=togglePlay;back15.onclick=()=>seekBy(-15);forward15.onclick=()=>seekBy(15);speedBtn.onclick=()=>{renderSpeedChoices();speedSheet.classList.add('show')};sleepBtn.onclick=()=>sleepSheet.classList.add('show');sourceBtn.onclick=()=>book&&window.open(book.url,'_blank','noopener');
-$$('.sheet-wrap').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)closeSheets()}));$$('.sleep-choice').forEach(b=>b.onclick=()=>setSleep(Number(b.dataset.min)));sleepOff.onclick=()=>clearSleep();customSleepBtn.onclick=()=>{const n=Number(customSleep.value);n>=1&&n<=600?setSleep(n):toast('От 1 до 600 минут')};
-progress.addEventListener('input',e=>{isSeeking=true;const p=Number(e.target.value)/1000;e.target.style.setProperty('--p',`${p*100}%`);currentTime.textContent=fmt((audio.duration||0)*p)});progress.addEventListener('change',e=>{if(Number.isFinite(audio.duration))audio.currentTime=audio.duration*(Number(e.target.value)/1000);isSeeking=false;saveProgress(true)});
-audio.addEventListener('timeupdate',()=>{updateProgress();saveProgress();checkSleep()});audio.addEventListener('durationchange',updateProgress);audio.addEventListener('play',async()=>{playBtn.textContent='❚❚';setupAnalyser();if(audioCtx?.state==='suspended')try{await audioCtx.resume()}catch{};updateMediaSession()});audio.addEventListener('pause',()=>{playBtn.textContent='▶';saveProgress(true)});audio.addEventListener('ratechange',()=>speedBtn.textContent=`${audio.playbackRate}×`);audio.addEventListener('ended',()=>{saveProgress(true);if(book&&chapterIndex<book.chapters.length-1)loadChapter(chapterIndex+1,0,true)});audio.addEventListener('error',()=>{if(audio.src)toast('Не удалось воспроизвести эту дорожку')});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkSleep();updateProgress()}else saveProgress(true)});window.addEventListener('pagehide',()=>saveProgress(true));window.addEventListener('resize',resizeViz);
-function onlineUI(){document.documentElement.classList.toggle('offline',!navigator.onLine)}window.addEventListener('online',onlineUI);window.addEventListener('offline',onlineUI);onlineUI();
-const storedSleep=Number(localStorage.getItem('slushayu_sleep')||0);if(storedSleep>Date.now()){sleepDeadline=storedSleep;sleepTimer=setInterval(checkSleep,1000)}else localStorage.removeItem('slushayu_sleep');
-renderLibrary();renderSpeedChoices();urlInput.placeholder=EXAMPLE;resizeViz();drawViz();
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=4').catch(()=>{}));
+async function resolvePlayableUrl(chapter){
+  const freshEnough = chapter.href && chapter.hrefTs && Date.now() - chapter.hrefTs < 45 * 60 * 1000;
+  if(freshEnough) return chapter.href;
+  try{
+    const href = await getDownloadLink(book.url, chapter.path || '');
+    chapter.href = href; chapter.hrefTs = Date.now();
+    return href;
+  }catch(err){
+    if(chapter.direct){ chapter.href = chapter.direct; chapter.hrefTs = Date.now(); return chapter.direct; }
+    throw err;
+  }
+}
+async function loadChapter(index, time=0, autoplay=false){
+  if(!book || !book.chapters[index] || loadingChapter) return;
+  loadingChapter = true; retryingFreshLink = false; chapterIndex = index;
+  renderPlaylist();
+  const chapter = book.chapters[index];
+  $('#chapterNow').textContent = chapter.name;
+  playerStatus('Получаю ссылку на файл…');
+  try{
+    const src = await resolvePlayableUrl(chapter);
+    await setAudioSource(src, time, autoplay);
+    updateResumeMeta();
+    playerStatus('Готово к воспроизведению');
+    saveProgress(true);
+  }catch(err){
+    playerStatus('Не удалось открыть дорожку');
+    toast('Не удалось открыть дорожку');
+  }finally{ loadingChapter = false; }
+}
+function setAudioSource(src, time=0, autoplay=false){
+  return new Promise((resolve,reject)=>{
+    const cleanup = ()=>{ audio.removeEventListener('loadedmetadata', onLoaded); audio.removeEventListener('canplay', onCanPlay); audio.removeEventListener('error', onError); };
+    const onLoaded = ()=>{ if(Number.isFinite(time) && time > 0){ try{ audio.currentTime = Math.min(time, Math.max(0, audio.duration || time)); }catch{} } updateProgress(); };
+    const onCanPlay = async ()=>{ cleanup(); if(autoplay){ try{ await audio.play(); }catch{ toast('Нажми Play ещё раз'); } } resolve(true); };
+    const onError = ()=>{ cleanup(); reject(new Error('Аудио не открылось')); };
+    audio.addEventListener('loadedmetadata', onLoaded, { once:true });
+    audio.addEventListener('canplay', onCanPlay, { once:true });
+    audio.addEventListener('error', onError, { once:true });
+    audio.src = src; audio.load();
+  });
+}
+
+function updateProgress(){
+  const current = Number(audio.currentTime || 0); const duration = Number(audio.duration || 0); const p = duration ? Math.max(0, Math.min(1, current / duration)) : 0;
+  const progress = $('#progress');
+  if(!isSeeking){ progress.value = String(Math.round(p * 1000)); progress.style.setProperty('--p', `${p*100}%`); }
+  $('#currentTime').textContent = fmt(current); $('#duration').textContent = fmt(duration);
+}
+function togglePlay(){ if(!book) return; if(!audio.src){ loadChapter(chapterIndex, 0, true); return; } audio.paused ? audio.play().catch(()=>toast('Нажми Play ещё раз')) : audio.pause(); }
+function seekBy(delta){ if(Number.isFinite(audio.duration)) audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + delta)); }
+function updatePlayButton(){ $('#playBtn').textContent = audio.paused ? 'Play' : 'Pause'; $('#playLed').classList.toggle('on', !audio.paused); $('#ledText').textContent = audio.paused ? 'ПАУЗА' : 'PLAY'; }
+function updateResumeMeta(){ if(!book) return; const rec = state.books[cleanKey(book.url)] || {}; $('#resumeMeta').textContent = `Сохранено: глава ${(Number(rec.chapter || chapterIndex) + 1)} · ${fmt(rec.time || audio.currentTime || 0)}`; }
+function restoreSpeed(){ if(!book) return; const rec = state.books[cleanKey(book.url)] || {}; const speed = Number(rec.speed || 1); $('#speedSelect').value = String(speed); setSpeed(speed); }
+function setSpeed(value){ const speed = Number(value) || 1; audio.playbackRate = speed; audio.defaultPlaybackRate = speed; if(book){ const key = cleanKey(book.url); const rec = state.books[key] || {}; rec.speed = speed; state.books[key] = rec; saveState(); } }
+function saveProgress(force=false){
+  if(!book) return; const now = Date.now(); if(!force && now - saveTick < 2500) return; saveTick = now;
+  const key = cleanKey(book.url);
+  state.books[key] = { ...(state.books[key] || {}), title:book.title, chapter:chapterIndex, time:Number(audio.currentTime || 0), duration:Number(audio.duration || 0), chapterCount:book.chapters.length, updated:now, source:'yandex', speed:audio.playbackRate || 1 };
+  state.lastUrl = key; saveState(); updateResumeMeta();
+}
+
+function setSleep(minutes){ sleepDeadline = Date.now() + minutes * 60000; localStorage.setItem('slushayu_sleep_deadline', String(sleepDeadline)); if(sleepTimer) clearInterval(sleepTimer); sleepTimer = setInterval(checkSleep, 1000); updateSleepLabel(); closeSleepDialog(); toast(`Сон через ${minutes} мин`); }
+function clearSleep(){ sleepDeadline = 0; localStorage.removeItem('slushayu_sleep_deadline'); if(sleepTimer) clearInterval(sleepTimer); sleepTimer = null; updateSleepLabel(); closeSleepDialog(); toast('Таймер сна выключен'); }
+function checkSleep(){ if(!sleepDeadline) return; const left = sleepDeadline - Date.now(); if(left <= 0){ audio.pause(); sleepDeadline = 0; localStorage.removeItem('slushayu_sleep_deadline'); if(sleepTimer) clearInterval(sleepTimer); sleepTimer = null; updateSleepLabel(); toast('Таймер сна сработал'); } else updateSleepLabel(); }
+function updateSleepLabel(){ $('#sleepInfo').textContent = sleepDeadline ? 'Сон: ' + Math.ceil(Math.max(0, sleepDeadline - Date.now()) / 60000) + ' мин' : 'Сон: выкл.'; }
+function openSleepDialog(){ $('#sleepDialog').classList.add('show'); }
+function closeSleepDialog(){ $('#sleepDialog').classList.remove('show'); }
+function updateClock(){ const d = new Date(); $('#clockLabel').textContent = d.toLocaleTimeString('ru-RU',{hour:'2-digit', minute:'2-digit'}); }
+
+const vizCanvas = $('#viz');
+const vizCtx = vizCanvas.getContext('2d');
+let vizPhase = 0;
+function resizeViz(){ const r = vizCanvas.getBoundingClientRect(); const dpr = Math.min(window.devicePixelRatio || 1, 2); vizCanvas.width = Math.max(1, Math.round(r.width * dpr)); vizCanvas.height = Math.max(1, Math.round(r.height * dpr)); vizCtx.setTransform(dpr,0,0,dpr,0,0); }
+function themeVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function drawViz(){
+  const w = vizCanvas.getBoundingClientRect().width; const h = vizCanvas.getBoundingClientRect().height;
+  vizCtx.clearRect(0,0,w,h);
+  const bars = Math.max(18, Math.floor(w / 14));
+  const gap = 3;
+  const bw = Math.max(6, (w - gap * (bars - 1)) / bars);
+  const segments = 12;
+  const segGap = 2;
+  const segH = Math.max(4, (h - (segments - 1) * segGap) / segments);
+  const offColor = themeVar('--eq-off');
+  const c1 = themeVar('--eq-on-1');
+  const c2 = themeVar('--eq-on-2');
+  const c3 = themeVar('--eq-on-3');
+  const grid = themeVar('--eq-grid');
+  const bg = themeVar('--eq-bg');
+  vizCtx.fillStyle = bg; vizCtx.fillRect(0,0,w,h);
+  vizCtx.strokeStyle = grid; vizCtx.lineWidth = 1;
+  for(let gy=0; gy<segments; gy++){ const y = h - gy * (segH + segGap) - 1; vizCtx.beginPath(); vizCtx.moveTo(0, y); vizCtx.lineTo(w, y); vizCtx.stroke(); }
+  vizPhase += audio.paused ? 0.035 : 0.11;
+  for(let i=0;i<bars;i++){
+    const x = i * (bw + gap);
+    const envelope = 0.4 + 0.6 * Math.sin(Math.PI * (i + 1) / (bars + 1));
+    const pulse = (Math.sin(vizPhase + i * 0.42) + Math.sin(vizPhase * 0.61 + i * 0.21) + 2) / 4;
+    const level = audio.paused ? 1 + Math.round(envelope * 2) : Math.max(1, Math.round((1.3 + pulse * 9.7) * envelope));
+    for(let s=0; s<segments; s++){
+      const y = h - (s + 1) * segH - s * segGap;
+      let color = offColor;
+      if(s < level){
+        if(s < segments * 0.55) color = c1;
+        else if(s < segments * 0.82) color = c2;
+        else color = c3;
+      }
+      vizCtx.fillStyle = color;
+      vizCtx.fillRect(x, y, bw, segH);
+    }
+    const peak = Math.min(segments - 1, Math.max(0, level));
+    const peakY = h - (peak + 1) * segH - peak * segGap - 1;
+    vizCtx.fillStyle = c3;
+    vizCtx.fillRect(x, peakY, bw, 2);
+  }
+  requestAnimationFrame(drawViz);
+}
+
+$('#lightThemeBtn').addEventListener('click', ()=>setTheme('light'));
+$('#darkThemeBtn').addEventListener('click', ()=>setTheme('dark'));
+$('#themeTogglePlayer').addEventListener('click', toggleTheme);
+$('#themeBtnInline').addEventListener('click', toggleTheme);
+$('#pasteBtn').addEventListener('click', async ()=>{ try{ $('#urlInput').value = await navigator.clipboard.readText(); toast('Вставлено'); }catch{ toast('Не удалось прочитать буфер'); } });
+$('#loadBtn').addEventListener('click', ()=>openUrl($('#urlInput').value, false));
+$('#continueBtn').addEventListener('click', ()=> state.lastUrl ? openUrl(state.lastUrl, false) : toast('Пока нет сохранённой книги'));
+$('#homeBtn').addEventListener('click', showHome);
+$('#playBtn').addEventListener('click', togglePlay);
+$('#back15').addEventListener('click', ()=>seekBy(-15));
+$('#forward15').addEventListener('click', ()=>seekBy(15));
+$('#speedSelect').addEventListener('change', e=>setSpeed(e.target.value));
+$('#sleepBtn').addEventListener('click', openSleepDialog);
+$('#closeSleepDialog').addEventListener('click', closeSleepDialog);
+$('#sleepDialog').addEventListener('click', e=>{ if(e.target === $('#sleepDialog')) closeSleepDialog(); });
+$('#sleepOff').addEventListener('click', clearSleep);
+$$('.sleep-preset').forEach(btn=>btn.addEventListener('click', ()=>setSleep(Number(btn.dataset.min))));
+$('#customSleepBtn').addEventListener('click', ()=>{ const n = Number($('#customSleep').value); if(n >= 1 && n <= 600) setSleep(n); else toast('От 1 до 600 минут'); });
+$('#sourceBtn').addEventListener('click', ()=>{ if(book) window.open(book.url, '_blank', 'noopener'); });
+$('#progress').addEventListener('input', e=>{ isSeeking = true; const p = Number(e.target.value)/1000; e.target.style.setProperty('--p', `${p*100}%`); $('#currentTime').textContent = fmt((audio.duration || 0) * p); });
+$('#progress').addEventListener('change', e=>{ if(Number.isFinite(audio.duration)) audio.currentTime = audio.duration * (Number(e.target.value)/1000); isSeeking = false; saveProgress(true); });
+
+$('#urlInput').addEventListener('keydown', e=>{ if((e.metaKey || e.ctrlKey) && e.key === 'Enter') openUrl($('#urlInput').value, false); });
+
+audio.addEventListener('loadedmetadata', updateProgress);
+audio.addEventListener('timeupdate', ()=>{ updateProgress(); saveProgress(); checkSleep(); });
+audio.addEventListener('durationchange', updateProgress);
+audio.addEventListener('play', ()=>{ updatePlayButton(); playerStatus('Воспроизведение'); });
+audio.addEventListener('pause', ()=>{ updatePlayButton(); saveProgress(true); if(!loadingChapter) playerStatus('Пауза'); });
+audio.addEventListener('ended', ()=>{ saveProgress(true); if(book && chapterIndex < book.chapters.length - 1) loadChapter(chapterIndex + 1, 0, true); });
+audio.addEventListener('error', async ()=>{
+  if(!book || loadingChapter || retryingFreshLink) return;
+  retryingFreshLink = true;
+  try{
+    const chapter = book.chapters[chapterIndex];
+    chapter.href = ''; chapter.hrefTs = 0;
+    const fresh = await resolvePlayableUrl(chapter);
+    await setAudioSource(fresh, Number(audio.currentTime || 0), true);
+    playerStatus('Ссылка обновлена');
+  }catch{
+    playerStatus('Не удалось воспроизвести дорожку');
+    toast('Не удалось воспроизвести дорожку');
+  }finally{ retryingFreshLink = false; }
+});
+
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveProgress(true); else { checkSleep(); updateProgress(); } });
+window.addEventListener('pagehide', ()=>saveProgress(true));
+window.addEventListener('resize', resizeViz);
+
+setTheme(state.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#urlInput').value = state.lastUrl || EXAMPLE;
+renderLibrary();
+updatePlayButton();
+updateSleepLabel();
+updateClock();
+setInterval(updateClock, 15000);
+resizeViz();
+drawViz();
+if(sleepDeadline > Date.now()) sleepTimer = setInterval(checkSleep, 1000); else { sleepDeadline = 0; localStorage.removeItem('slushayu_sleep_deadline'); }
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js?' + SW_VERSION).catch(()=>{}));
 })();
 </script>
 </body>
