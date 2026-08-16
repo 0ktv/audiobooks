@@ -1,45 +1,54 @@
-СЛУШАЮ 98 — MOBILE v4 / QA REPORT
+СЛУШАЮ 98 v5 — QA REPORT
 
-КОРНЕВАЯ ПРИЧИНА
-----------------
-В v3 приложение читало список файлов Яндекс Диска правильно, но затем пересобирало путь к MP3 вручную.
-Для публичных папок это ненадёжно: Yandex Public API уже возвращает точный item.path, который нужно использовать
-при запросе /public/resources/download. Из-за неверного path API мог вернуть не тот ресурс/ошибку, а Safari получал
-невалидный media source — поэтому duration оставался 0:00 и Play падал.
+Причина ошибки v4
+-----------------
+GitHub Pages — статический origin. Яндекс Диск отдаёт временный download URL на другом origin.
+iOS Safari не смог использовать этот URL как media stream, а JS fetch() не смог прочитать MP3 body из-за CORS.
+Blob fallback поэтому также падал.
 
-ЧТО ИСПРАВЛЕНО
----------------
-1. Сохраняется raw item.path из ответа Yandex API и пробуется первым без изменений.
-2. Затем пробуются совместимые варианты path (нормализованный, с ведущим / и без него).
-3. /public/resources/download теперь вызывается для конкретного файла по exact path.
-4. Metadata `file` используется только как fallback, а не как основной источник.
-5. Для Yandex download URL пробуется исходный URL и вариант disposition=inline.
-6. Если iOS Safari всё равно отвергает поток, глава загружается в Blob и проигрывается как локальный blob: URL.
-7. Play отключён, пока новая глава подключается, чтобы пользователь не запускал пустой/старый src.
-8. При нажатии Play сначала вызывается audio.play() непосредственно в пользовательском click-handler — это важно для iOS.
-9. При истёкшей временной ссылке приложение запрашивает новую и готовит дорожку заново.
-10. Состояние v3 автоматически мигрирует в v4.
+Решение v5
+----------
+Добавлен Cloudflare Worker audio gateway:
+GitHub Pages -> Worker -> Yandex Disk download API -> Yandex downloader -> Worker -> Safari audio
 
-QA
---
-PASS  JavaScript syntax: node --check
-PASS  Service Worker syntax: node --check
-PASS  DOM id integrity: все JS #id ссылки существуют
-PASS  Duplicate DOM ids: отсутствуют
-PASS  Root file path: /01.mp3 сохраняется как exact API path
-PASS  Nested path: /Part 2/03.mp3 сохраняется как exact API path
-PASS  Raw-path-first strategy: item.path -> normalized -> /variant -> fallback
-PASS  Chapter click не пытается autoplay до подготовки источника
-PASS  Play disabled во время подключения главы
-PASS  Yandex disposition inline fallback присутствует
-PASS  Blob fallback присутствует
-PASS  v3 localStorage -> v4 migration
-PASS  Mobile CSS: viewport-fit=cover, overflow-x:hidden, min-width:0, sticky controls
-PASS  Service worker: новый cache namespace slushayu-mobile-win98-v4, регистрация v9
+Worker:
+- принимает public_key + path;
+- пробует path как пришёл от Yandex и нормализованные варианты public:/x -> /x -> x;
+- серверно получает свежий href через /public/resources/download;
+- проксирует Range / If-Range / If-None-Match;
+- сохраняет HTTP 206 и Content-Range;
+- выставляет корректный audio MIME;
+- Content-Disposition: inline;
+- CORS разрешён только для https://0ktv.github.io;
+- не является произвольным open proxy.
 
-ОГРАНИЧЕНИЕ QA-СРЕДЫ
+Автоматические тесты
 --------------------
-В этой среде невозможно провести живой сетевой media-test именно через iOS Safari и пользовательский Yandex downloader URL.
-Поэтому сетевой слой проверен по API-контракту, path-логике и fallback-цепочке, а окончательный live media-test должен пройти
-на реальном iPhone после публикации. Если Yandex сам включит лимит публичных скачиваний, приложение теперь покажет точную
-media/API ошибку вместо абстрактного «Play не работает».
+PASS JS syntax — index.html
+PASS JS syntax — worker.js
+PASS JS syntax — sw.js
+PASS no duplicate DOM ids
+PASS all #id selectors resolve
+PASS gateway settings UI wired
+PASS dark playlist CSS present
+PASS PWA storage/cache upgraded to v5/v10
+PASS worker /health
+PASS worker /meta public metadata proxy
+PASS public:/02.mp3 path fallback -> /02.mp3
+PASS Range: bytes=0-9 forwarded to Yandex downloader mock
+PASS HTTP 206 preserved
+PASS Content-Range preserved
+PASS Accept-Ranges preserved
+PASS application/octet-stream normalized to audio/mpeg
+PASS CORS for https://0ktv.github.io
+PASS unrelated web origins blocked
+
+Browser E2E
+-----------
+Подготовлен локальный E2E сценарий folder -> metadata -> Range MP3 -> duration -> Play -> dark playlist.
+В текущем sandbox Chromium блокирует loopback navigation политикой администратора (ERR_BLOCKED_BY_ADMINISTRATOR),
+поэтому фактический Safari/WebKit live-test остаётся финальным тестом на iPhone после развертывания Worker.
+
+Важное отличие
+--------------
+v5 больше НЕ полагается на публичные CORS proxy для MP3. Аудио стримится через собственный Worker с Range support.
